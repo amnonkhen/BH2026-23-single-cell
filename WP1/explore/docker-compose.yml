@@ -1,0 +1,23 @@
+services:
+  typesense:
+    image: typesense/typesense:27.1
+    container_name: fenix-typesense
+    restart: unless-stopped
+    ports:
+      - "${TYPESENSE_PORT:-8108}:8108"
+    volumes:
+      - typesense-data:/data
+    command:
+      - "--data-dir"
+      - "/data"
+      - "--api-key=${TYPESENSE_API_KEY:-bh2026-typesense-admin-key}"
+      - "--enable-cors"
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/8108'"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 5s
+
+volumes:
+  typesense-data:

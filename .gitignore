@@ -16,6 +16,11 @@ __pycache__/
 .venv/
 venv/
 
+# Node / Vite
+node_modules/
+dist/
+*.tsbuildinfo
+
 # OS / editor
 .DS_Store
 .vscode/

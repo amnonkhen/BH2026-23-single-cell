@@ -62,9 +62,14 @@ Identifiers / links: `experiment_id`, `study_id`, `explorer_url`, `assets[].url`
 3. **Filter** `disease≠normal` → **group by** `organism` or `study_journal`.
 4. **Filter** `suspension_type=nucleus` → **group by** `tissue.top-organ-name`.
 
-## Proposed search UI stacks (not implemented yet)
+## Implemented explore stack
+
+**Typesense + React InstantSearch + FastAPI (MCP-ready)** is scaffolded in [`../explore/`](../explore/). See that README for `compose up` → index → API → UI.
+
+## Proposed search UI stacks (context / alternatives)
 
 Goal: filter datasets by one attribute (e.g. tissue) and aggregate/group by another. Catalog size (~429 rows, ~6 MiB) fits **fully client-side** or a tiny local backend.
+
 
 ### 1. Python FastAPI + React (recommended default)
 
