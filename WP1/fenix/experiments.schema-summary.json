@@ -1,0 +1,814 @@
+{
+  "total": 429,
+  "n_records": 429,
+  "top_level_keys": [
+    "data",
+    "total"
+  ],
+  "record_fields": [
+    "_id",
+    "administration",
+    "assay",
+    "assets",
+    "authors",
+    "batch_condition",
+    "cell_count",
+    "cell_type",
+    "citation",
+    "default_embedding",
+    "development_stage",
+    "disease",
+    "donor_id",
+    "embeddings",
+    "experiment_id",
+    "experiment_version_id",
+    "explorer_url",
+    "feature_biotype",
+    "feature_count",
+    "feature_reference",
+    "id",
+    "is_primary_data",
+    "journal_resolution",
+    "mean_genes_per_cell",
+    "organism",
+    "primary_author",
+    "primary_author_count",
+    "primary_cell_count",
+    "published_at",
+    "raw_data_location",
+    "revised_at",
+    "schema_version",
+    "search_result_groups",
+    "search_text",
+    "self_reported_ethnicity",
+    "sex",
+    "spatial",
+    "statistics",
+    "study_id",
+    "study_journal",
+    "suspension_type",
+    "tissue",
+    "title",
+    "tombstone",
+    "x_approximate_distribution"
+  ],
+  "facets": {
+    "organism.label": {
+      "unique": 5,
+      "top": [
+        [
+          "Homo sapiens",
+          312
+        ],
+        [
+          "Mus musculus",
+          57
+        ],
+        [
+          "Danio rerio",
+          32
+        ],
+        [
+          "Microcebus murinus",
+          27
+        ],
+        [
+          "Sus scrofa",
+          1
+        ]
+      ]
+    },
+    "tissue.label": {
+      "unique": 317,
+      "top": [
+        [
+          "lung",
+          43
+        ],
+        [
+          "ileum",
+          42
+        ],
+        [
+          "colon",
+          37
+        ],
+        [
+          "duodenum",
+          36
+        ],
+        [
+          "thymus",
+          36
+        ],
+        [
+          "liver",
+          35
+        ],
+        [
+          "bone marrow",
+          33
+        ],
+        [
+          "mesenteric lymph node",
+          32
+        ],
+        [
+          "heart left ventricle",
+          29
+        ],
+        [
+          "brain",
+          29
+        ],
+        [
+          "cerebellum",
+          29
+        ],
+        [
+          "blood",
+          26
+        ],
+        [
+          "hindbrain",
+          26
+        ],
+        [
+          "midbrain",
+          25
+        ],
+        [
+          "apex of heart",
+          24
+        ],
+        [
+          "telencephalon",
+          24
+        ],
+        [
+          "kidney",
+          24
+        ],
+        [
+          "breast",
+          23
+        ],
+        [
+          "medulla oblongata",
+          23
+        ],
+        [
+          "spleen",
+          23
+        ]
+      ]
+    },
+    "tissue.top-organ-name": {
+      "unique": 39,
+      "top": [
+        [
+          "Systemic / not organ-specific",
+          146
+        ],
+        [
+          "large intestine",
+          54
+        ],
+        [
+          "heart",
+          48
+        ],
+        [
+          "small intestine",
+          48
+        ],
+        [
+          "lung",
+          47
+        ],
+        [
+          "brain",
+          47
+        ],
+        [
+          "liver",
+          45
+        ],
+        [
+          "thymus",
+          36
+        ],
+        [
+          "lymph node",
+          36
+        ],
+        [
+          "bone marrow",
+          33
+        ],
+        [
+          "mammary gland",
+          33
+        ],
+        [
+          "kidney",
+          30
+        ],
+        [
+          "blood",
+          28
+        ],
+        [
+          "stomach",
+          27
+        ],
+        [
+          "skin of body",
+          24
+        ],
+        [
+          "connective tissue",
+          24
+        ],
+        [
+          "esophagus",
+          24
+        ],
+        [
+          "spleen",
+          23
+        ],
+        [
+          "female reproductive organ",
+          22
+        ],
+        [
+          "mouth",
+          21
+        ]
+      ]
+    },
+    "tissue.tissue_type": {
+      "unique": 3,
+      "top": [
+        [
+          "tissue",
+          409
+        ],
+        [
+          "organoid",
+          16
+        ],
+        [
+          "primary cell culture",
+          6
+        ]
+      ]
+    },
+    "assay.label": {
+      "unique": 21,
+      "top": [
+        [
+          "10x 3' v2",
+          250
+        ],
+        [
+          "10x 3' v3",
+          202
+        ],
+        [
+          "10x 5' v1",
+          106
+        ],
+        [
+          "10x 5' v2",
+          54
+        ],
+        [
+          "Smart-seq2",
+          54
+        ],
+        [
+          "sci-RNA-seq3",
+          34
+        ],
+        [
+          "10x 5' transcription profiling",
+          30
+        ],
+        [
+          "10x 3' v1",
+          18
+        ],
+        [
+          "10x multiome",
+          17
+        ],
+        [
+          "CEL-seq2",
+          4
+        ],
+        [
+          "Drop-seq",
+          4
+        ],
+        [
+          "BD Rhapsody Targeted mRNA",
+          3
+        ],
+        [
+          "10x scATAC-seq",
+          3
+        ],
+        [
+          "10x gene expression flex",
+          3
+        ],
+        [
+          "SORT-seq",
+          2
+        ],
+        [
+          "Seq-Well S3",
+          2
+        ],
+        [
+          "inDrop",
+          1
+        ],
+        [
+          "microwell-seq",
+          1
+        ],
+        [
+          "10x 3' transcription profiling",
+          1
+        ],
+        [
+          "BD Rhapsody Whole Transcriptome Analysis",
+          1
+        ]
+      ]
+    },
+    "disease.label": {
+      "unique": 74,
+      "top": [
+        [
+          "normal",
+          402
+        ],
+        [
+          "Crohn disease",
+          13
+        ],
+        [
+          "gastric cancer",
+          11
+        ],
+        [
+          "colorectal cancer",
+          10
+        ],
+        [
+          "ulcerative colitis",
+          10
+        ],
+        [
+          "invasive ductal breast carcinoma",
+          9
+        ],
+        [
+          "arrhythmogenic right ventricular cardiomyopathy",
+          9
+        ],
+        [
+          "dilated cardiomyopathy",
+          9
+        ],
+        [
+          "non-compaction cardiomyopathy",
+          9
+        ],
+        [
+          "inflammatory bowel disease",
+          9
+        ],
+        [
+          "invasive lobular breast carcinoma",
+          8
+        ],
+        [
+          "Barrett esophagus",
+          8
+        ],
+        [
+          "gastric intestinal metaplasia",
+          8
+        ],
+        [
+          "gastritis",
+          8
+        ],
+        [
+          "breast carcinoma",
+          6
+        ],
+        [
+          "myocarditis",
+          6
+        ],
+        [
+          "myocardial infarction",
+          5
+        ],
+        [
+          "urinary bladder cancer",
+          5
+        ],
+        [
+          "B-cell non-Hodgkin lymphoma",
+          5
+        ],
+        [
+          "COVID-19",
+          4
+        ]
+      ]
+    },
+    "cell_type.label": {
+      "unique": 698,
+      "top": [
+        [
+          "macrophage",
+          137
+        ],
+        [
+          "unknown",
+          120
+        ],
+        [
+          "natural killer cell",
+          113
+        ],
+        [
+          "fibroblast",
+          107
+        ],
+        [
+          "endothelial cell",
+          95
+        ],
+        [
+          "B cell",
+          93
+        ],
+        [
+          "pericyte",
+          85
+        ],
+        [
+          "T cell",
+          79
+        ],
+        [
+          "plasma cell",
+          78
+        ],
+        [
+          "plasmacytoid dendritic cell",
+          77
+        ],
+        [
+          "endothelial cell of lymphatic vessel",
+          77
+        ],
+        [
+          "mast cell",
+          75
+        ],
+        [
+          "monocyte",
+          73
+        ],
+        [
+          "conventional dendritic cell",
+          70
+        ],
+        [
+          "neutrophil",
+          68
+        ],
+        [
+          "regulatory T cell",
+          61
+        ],
+        [
+          "CD4-positive, alpha-beta T cell",
+          60
+        ],
+        [
+          "CD8-positive, alpha-beta T cell",
+          58
+        ],
+        [
+          "dendritic cell",
+          58
+        ],
+        [
+          "epithelial cell",
+          57
+        ]
+      ]
+    },
+    "development_stage.label": {
+      "unique": 195,
+      "top": [
+        [
+          "13th week post-fertilization stage",
+          80
+        ],
+        [
+          "seventh decade stage",
+          78
+        ],
+        [
+          "sixth decade stage",
+          75
+        ],
+        [
+          "10th week post-fertilization stage",
+          74
+        ],
+        [
+          "9th week post-fertilization stage",
+          74
+        ],
+        [
+          "12th week post-fertilization stage",
+          72
+        ],
+        [
+          "15th week post-fertilization stage",
+          72
+        ],
+        [
+          "eighth decade stage",
+          68
+        ],
+        [
+          "11th week post-fertilization stage",
+          65
+        ],
+        [
+          "55-year-old stage",
+          58
+        ],
+        [
+          "17th week post-fertilization stage",
+          56
+        ],
+        [
+          "fifth decade stage",
+          55
+        ],
+        [
+          "3-month-old stage",
+          54
+        ],
+        [
+          "58-year-old stage",
+          53
+        ],
+        [
+          "29-year-old stage",
+          53
+        ],
+        [
+          "14th week post-fertilization stage",
+          52
+        ],
+        [
+          "third decade stage",
+          49
+        ],
+        [
+          "18th week post-fertilization stage",
+          48
+        ],
+        [
+          "adult stage",
+          45
+        ],
+        [
+          "Carnegie stage 22",
+          45
+        ]
+      ]
+    },
+    "sex.label": {
+      "unique": 3,
+      "top": [
+        [
+          "female",
+          337
+        ],
+        [
+          "male",
+          298
+        ],
+        [
+          "unknown",
+          120
+        ]
+      ]
+    },
+    "self_reported_ethnicity.label": {
+      "unique": 19,
+      "top": [
+        [
+          "unknown",
+          294
+        ],
+        [
+          "na",
+          117
+        ],
+        [
+          "Asian",
+          73
+        ],
+        [
+          "African American",
+          40
+        ],
+        [
+          "Hispanic or Latin",
+          39
+        ],
+        [
+          "British",
+          28
+        ],
+        [
+          "European American",
+          23
+        ],
+        [
+          "German",
+          15
+        ],
+        [
+          "South Asian",
+          13
+        ],
+        [
+          "Chinese",
+          10
+        ],
+        [
+          "Southeast Asian",
+          9
+        ],
+        [
+          "American",
+          9
+        ],
+        [
+          "Canadian",
+          9
+        ],
+        [
+          "Native American",
+          9
+        ],
+        [
+          "Bangladeshi",
+          5
+        ],
+        [
+          "Irish",
+          5
+        ],
+        [
+          "East Asian",
+          3
+        ],
+        [
+          "Han Chinese",
+          1
+        ],
+        [
+          "European American || Hispanic or Latin",
+          1
+        ]
+      ]
+    },
+    "suspension_type": {
+      "unique": 2,
+      "top": [
+        [
+          "cell",
+          353
+        ],
+        [
+          "nucleus",
+          111
+        ]
+      ]
+    },
+    "study_journal": {
+      "unique": 31,
+      "top": [
+        [
+          "Nature",
+          168
+        ],
+        [
+          "Science",
+          48
+        ],
+        [
+          "Cell",
+          41
+        ],
+        [
+          "bioRxiv",
+          35
+        ],
+        [
+          "Nat Genet",
+          26
+        ],
+        [
+          "Nat Commun",
+          16
+        ],
+        [
+          "Proc. Natl. Acad. Sci. U.S.A.",
+          12
+        ],
+        [
+          "Journal of Hepatology",
+          10
+        ],
+        [
+          "Nat Aging",
+          8
+        ],
+        [
+          "Sci. Immunol.",
+          8
+        ],
+        [
+          "Cancer Discovery",
+          8
+        ],
+        [
+          "Nat Immunol",
+          6
+        ],
+        [
+          "Nat Cardiovasc Res",
+          6
+        ],
+        [
+          "Cell Reports",
+          5
+        ],
+        [
+          "Cancer Cell",
+          4
+        ],
+        [
+          "iScience",
+          3
+        ],
+        [
+          "The EMBO Journal",
+          3
+        ],
+        [
+          "Cell Reports Medicine",
+          3
+        ],
+        [
+          "Cell Systems",
+          2
+        ],
+        [
+          "Developmental Cell",
+          2
+        ]
+      ]
+    },
+    "schema_version": {
+      "unique": 1,
+      "top": [
+        [
+          "7.0.0",
+          429
+        ]
+      ]
+    }
+  }
+}

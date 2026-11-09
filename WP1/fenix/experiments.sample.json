@@ -1,0 +1,843 @@
+{
+  "data": [
+    {
+      "_id": "93eebe82-d8c3-41bc-a906-63b5b5f24a9d::b3a5a10f-b1cb-4e8e-abce-bf345448625b",
+      "assay": [
+        {
+          "label": "BD Rhapsody Targeted mRNA",
+          "ontology_term_id": "EFO:0700004"
+        }
+      ],
+      "assets": [
+        {
+          "filesize": 27467534,
+          "filetype": "H5AD",
+          "url": "https://datasets.cellxgene.cziscience.com/259abc0c-a048-4400-b704-e9269c921b44.h5ad"
+        }
+      ],
+      "authors": [
+        {
+          "family": "Triana",
+          "given": "Sergio"
+        },
+        {
+          "family": "Vonficht",
+          "given": "Dominik"
+        },
+        {
+          "family": "Jopp-Saile",
+          "given": "Lea"
+        },
+        {
+          "family": "Raffel",
+          "given": "Simon"
+        },
+        {
+          "family": "Lutz",
+          "given": "Raphael"
+        },
+        {
+          "family": "Leonce",
+          "given": "Daniel"
+        },
+        {
+          "family": "Antes",
+          "given": "Magdalena"
+        },
+        {
+          "family": "Hern\u00e1ndez-Malmierca",
+          "given": "Pablo"
+        },
+        {
+          "family": "Ordo\u00f1ez-Rueda",
+          "given": "Diana"
+        },
+        {
+          "family": "Ramasz",
+          "given": "Be\u00e1ta"
+        },
+        {
+          "family": "Boch",
+          "given": "Tobias"
+        },
+        {
+          "family": "Jann",
+          "given": "Johann-Christoph"
+        },
+        {
+          "family": "Nowak",
+          "given": "Daniel"
+        },
+        {
+          "family": "Hofmann",
+          "given": "Wolf-Karsten"
+        },
+        {
+          "family": "M\u00fcller-Tidow",
+          "given": "Carsten"
+        },
+        {
+          "family": "H\u00fcbschmann",
+          "given": "Daniel"
+        },
+        {
+          "family": "Alexandrov",
+          "given": "Theodore"
+        },
+        {
+          "family": "Benes",
+          "given": "Vladimir"
+        },
+        {
+          "family": "Trumpp",
+          "given": "Andreas"
+        },
+        {
+          "family": "Paulsen",
+          "given": "Malte"
+        },
+        {
+          "family": "Velten",
+          "given": "Lars"
+        },
+        {
+          "family": "Haas",
+          "given": "Simon"
+        }
+      ],
+      "cell_count": 31586,
+      "cell_type": [
+        {
+          "label": "CD16-negative, CD56-bright natural killer cell, human",
+          "ontology_term_id": "CL:0000938"
+        },
+        {
+          "label": "CD16-positive, CD56-dim natural killer cell, human",
+          "ontology_term_id": "CL:0000939"
+        },
+        {
+          "label": "CD4-positive, alpha-beta cytotoxic T cell",
+          "ontology_term_id": "CL:0000934"
+        },
+        {
+          "label": "CD4-positive, alpha-beta memory T cell",
+          "ontology_term_id": "CL:0000897"
+        },
+        {
+          "label": "CD8-positive, alpha-beta memory T cell",
+          "ontology_term_id": "CL:0000909"
+        },
+        {
+          "label": "basophil mast progenitor cell",
+          "ontology_term_id": "CL:0002028"
+        },
+        {
+          "label": "central memory CD8-positive, alpha-beta T cell",
+          "ontology_term_id": "CL:0000907"
+        },
+        {
+          "label": "class switched memory B cell",
+          "ontology_term_id": "CL:0000972"
+        },
+        {
+          "label": "classical monocyte",
+          "ontology_term_id": "CL:0000860"
+        },
+        {
+          "label": "common dendritic progenitor",
+          "ontology_term_id": "CL:0001029"
+        },
+        {
+          "label": "conventional dendritic cell",
+          "ontology_term_id": "CL:0000990"
+        },
+        {
+          "label": "early promyelocyte",
+          "ontology_term_id": "CL:0002154"
+        },
+        {
+          "label": "effector memory CD8-positive, alpha-beta T cell",
+          "ontology_term_id": "CL:0000913"
+        },
+        {
+          "label": "erythroid lineage cell",
+          "ontology_term_id": "CL:0000764"
+        },
+        {
+          "label": "erythroid progenitor cell",
+          "ontology_term_id": "CL:0000038"
+        },
+        {
+          "label": "fraction A pre-pro B cell",
+          "ontology_term_id": "CL:0002045"
+        },
+        {
+          "label": "gamma-delta T cell",
+          "ontology_term_id": "CL:0000798"
+        },
+        {
+          "label": "hematopoietic multipotent progenitor cell",
+          "ontology_term_id": "CL:0000837"
+        },
+        {
+          "label": "immature B cell",
+          "ontology_term_id": "CL:0000816"
+        },
+        {
+          "label": "late promyelocyte",
+          "ontology_term_id": "CL:0002151"
+        },
+        {
+          "label": "lymphoid lineage restricted progenitor cell",
+          "ontology_term_id": "CL:0000838"
+        },
+        {
+          "label": "megakaryocyte progenitor cell",
+          "ontology_term_id": "CL:0000553"
+        },
+        {
+          "label": "megakaryocyte-erythroid progenitor cell",
+          "ontology_term_id": "CL:0000050"
+        },
+        {
+          "label": "memory B cell",
+          "ontology_term_id": "CL:0000787"
+        },
+        {
+          "label": "mesenchymal cell",
+          "ontology_term_id": "CL:0008019"
+        },
+        {
+          "label": "myelocyte",
+          "ontology_term_id": "CL:0002193"
+        },
+        {
+          "label": "naive B cell",
+          "ontology_term_id": "CL:0000788"
+        },
+        {
+          "label": "naive thymus-derived CD4-positive, alpha-beta T cell",
+          "ontology_term_id": "CL:0000895"
+        },
+        {
+          "label": "naive thymus-derived CD8-positive, alpha-beta T cell",
+          "ontology_term_id": "CL:0000900"
+        },
+        {
+          "label": "natural killer cell",
+          "ontology_term_id": "CL:0000623"
+        },
+        {
+          "label": "non-classical monocyte",
+          "ontology_term_id": "CL:0000875"
+        },
+        {
+          "label": "plasma cell",
+          "ontology_term_id": "CL:0000786"
+        },
+        {
+          "label": "plasmacytoid dendritic cell",
+          "ontology_term_id": "CL:0000784"
+        },
+        {
+          "label": "pre-natural killer cell",
+          "ontology_term_id": "CL:0000937"
+        },
+        {
+          "label": "precursor B cell",
+          "ontology_term_id": "CL:0000817"
+        },
+        {
+          "label": "pro-B cell",
+          "ontology_term_id": "CL:0000826"
+        },
+        {
+          "label": "progenitor cell",
+          "ontology_term_id": "CL:0011026"
+        },
+        {
+          "label": "unswitched memory B cell",
+          "ontology_term_id": "CL:0000970"
+        }
+      ],
+      "citation": "Publication: https://doi.org/10.1038/s41590-021-01059-0 Dataset Version: https://datasets.cellxgene.cziscience.com/259abc0c-a048-4400-b704-e9269c921b44.h5ad curated and distributed by CZ CELLxGENE Discover in Collection: https://cellxgene.cziscience.com/collections/93eebe82-d8c3-41bc-a906-63b5b5f24a9d",
+      "default_embedding": "X_projected",
+      "development_stage": [
+        {
+          "label": "32-year-old stage",
+          "ontology_term_id": "HsapDv:0000126"
+        },
+        {
+          "label": "44-year-old stage",
+          "ontology_term_id": "HsapDv:0000138"
+        },
+        {
+          "label": "45-year-old stage",
+          "ontology_term_id": "HsapDv:0000139"
+        },
+        {
+          "label": "46-year-old stage",
+          "ontology_term_id": "HsapDv:0000140"
+        },
+        {
+          "label": "51-year-old stage",
+          "ontology_term_id": "HsapDv:0000145"
+        },
+        {
+          "label": "54-year-old stage",
+          "ontology_term_id": "HsapDv:0000148"
+        },
+        {
+          "label": "55-year-old stage",
+          "ontology_term_id": "HsapDv:0000149"
+        },
+        {
+          "label": "56-year-old stage",
+          "ontology_term_id": "HsapDv:0000150"
+        },
+        {
+          "label": "61-year-old stage",
+          "ontology_term_id": "HsapDv:0000155"
+        },
+        {
+          "label": "62-year-old stage",
+          "ontology_term_id": "HsapDv:0000156"
+        },
+        {
+          "label": "66-year-old stage",
+          "ontology_term_id": "HsapDv:0000160"
+        },
+        {
+          "label": "70-year-old stage",
+          "ontology_term_id": "HsapDv:0000164"
+        },
+        {
+          "label": "71-year-old stage",
+          "ontology_term_id": "HsapDv:0000165"
+        },
+        {
+          "label": "78-year-old stage",
+          "ontology_term_id": "HsapDv:0000172"
+        }
+      ],
+      "disease": [
+        {
+          "label": "acute myeloid leukemia",
+          "ontology_term_id": "MONDO:0018874"
+        },
+        {
+          "label": "acute promyelocytic leukemia",
+          "ontology_term_id": "MONDO:0012883"
+        }
+      ],
+      "donor_id": [
+        "AML1",
+        "Q59",
+        "AML3",
+        "APL124",
+        "APL223",
+        "APL147",
+        "AML183",
+        "AML127",
+        "AML334",
+        "AML327",
+        "APL142",
+        "AML314",
+        "APL218",
+        "AML116",
+        "APL224"
+      ],
+      "embeddings": [
+        "X_bothumap",
+        "X_pca",
+        "X_projected",
+        "X_projectedmean",
+        "X_tsneni",
+        "X_umapni"
+      ],
+      "experiment_id": "b3a5a10f-b1cb-4e8e-abce-bf345448625b",
+      "experiment_version_id": "259abc0c-a048-4400-b704-e9269c921b44",
+      "explorer_url": "https://cellxgene.cziscience.com/e/b3a5a10f-b1cb-4e8e-abce-bf345448625b.cxg/",
+      "feature_biotype": [
+        "gene"
+      ],
+      "feature_count": 458,
+      "feature_reference": [
+        "NCBITaxon:9606"
+      ],
+      "id": "93eebe82-d8c3-41bc-a906-63b5b5f24a9d::b3a5a10f-b1cb-4e8e-abce-bf345448625b",
+      "is_primary_data": [
+        true
+      ],
+      "mean_genes_per_cell": 107.31406319255366,
+      "organism": [
+        {
+          "label": "Homo sapiens",
+          "ontology_term_id": "NCBITaxon:9606"
+        }
+      ],
+      "primary_author": {
+        "given": "Sergio",
+        "family": "Triana"
+      },
+      "primary_author_count": 22,
+      "primary_cell_count": 31586,
+      "published_at": "2022-08-16T21:57:59+00:00",
+      "raw_data_location": "raw.X",
+      "revised_at": "2025-10-24T21:07:21+00:00",
+      "schema_version": "7.0.0",
+      "search_text": "93eebe82-d8c3-41bc-a906-63b5b5f24a9d::b3a5a10f-b1cb-4e8e-abce-bf345448625b \u250a 93eebe82-d8c3-41bc-a906-63b5b5f24a9d::b3a5a10f-b1cb-4e8e-abce-bf345448625b \u250a 93eebe82-d8c3-41bc-a906-63b5b5f24a9d \u250a b3a5a10f-b1cb-4e8e-abce-bf345448625b \u250a 0 \u250a bd rhapsody targeted mrna \u250a efo:0700004 \u250a 27467534 \u250a h5ad \u250a https://datasets.cellxgene.cziscience.com/259abc0c-a048-4400-b704-e9269c921b44.h5ad \u250a 31586 \u250a cd16-negative, cd56-bright natural killer cell, human \u250a cl:0000938 \u250a cd16-positive, cd56-dim natural killer cell, human \u250a cl:0000939 \u250a cd4-positive, alpha-beta cytotoxic t cell \u250a cl:0000934 \u250a cd4-positive, alpha-beta memory t cell \u250a cl:0000897 \u250a cd8-positive, alpha-beta memory t cell \u250a cl:0000909 \u250a basophil mast progenitor cell \u250a cl:0002028 \u250a central memory cd8-positive, alpha-beta t cell \u250a cl:0000907 \u250a class switched memory b cell \u250a cl:0000972 \u250a classical monocyte \u250a cl:0000860 \u250a common dendritic progenitor \u250a cl:0001029 \u250a conventional dendritic cell \u250a cl:0000990 \u250a early promyelocyte \u250a cl:0002154 \u250a effector memory cd8-positive, alpha-beta t cell \u250a cl:0000913 \u250a erythroid lineage cell \u250a cl:0000764 \u250a erythroid progenitor cell \u250a cl:0000038 \u250a fraction a pre-pro b cell \u250a cl:0002045 \u250a gamma-delta t cell \u250a cl:0000798 \u250a hematopoietic multipotent progenitor cell \u250a cl:0000837 \u250a immature b cell \u250a cl:0000816 \u250a late promyelocyte \u250a cl:0002151 \u250a lymphoid lineage restricted progenitor cell \u250a cl:0000838 \u250a megakaryocyte progenitor cell \u250a cl:0000553 \u250a megakaryocyte-erythroid progenitor cell \u250a cl:0000050 \u250a memory b cell \u250a cl:0000787 \u250a mesenchymal cell \u250a cl:0008019 \u250a myelocyte \u250a cl:0002193 \u250a naive b cell \u250a cl:0000788 \u250a naive thymus-derived cd4-positive, alpha-beta t cell \u250a cl:0000895 \u250a naive thymus-derived cd8-positive, alpha-beta t cell \u250a cl:0000900 \u250a natural killer cell \u250a cl:0000623 \u250a non-classical monocyte \u250a cl:0000875 \u250a plasma cell \u250a cl:0000786 \u250a plasmacytoid dendritic cell \u250a cl:0000784 \u250a pre-natural killer cell \u250a cl:0000937 \u250a precursor b cell \u250a cl:0000817 \u250a pro-b cell \u250a cl:0000826 \u250a progenitor cell \u250a cl:0011026 \u250a unswitched memory b cell \u250a cl:0000970 \u250a publication: https://doi.org/10.1038/s41590-021-01059-0 dataset version: https://datasets.cellxgene.cziscience.com/259abc0c-a048-4400-b704-e9269c921b44.h5ad curated and distributed by cz cellxgene discover in collection: https://cellxgene.cziscience.com/collections/93eebe82-d8c3-41bc-a906-63b5b5f24a9d \u250a 259abc0c-a048-4400-b704-e9269c921b44 \u250a x_projected \u250a 32-year-old stage \u250a hsapdv:0000126 \u250a 44-year-old stage \u250a hsapdv:0000138 \u250a 45-year-old stage \u250a hsapdv:0000139 \u250a 46-year-old stage \u250a hsapdv:0000140 \u250a 51-year-old stage \u250a hsapdv:0000145 \u250a 54-year-old stage \u250a hsapdv:0000148 \u250a 55-year-old stage \u250a hsapdv:0000149 \u250a 56-year-old stage \u250a hsapdv:0000150 \u250a 61-year-old stage \u250a hsapdv:0000155 \u250a 62-year-old stage \u250a hsapdv:0000156 \u250a 66-year-old stage \u250a hsapdv:0000160 \u250a 70-year-old stage \u250a hsapdv:0000164 \u250a 71-year-old stage \u250a hsapdv:0000165 \u250a 78-year-old stage \u250a hsapdv:0000172 \u250a acute myeloid leukemia \u250a mondo:0018874 \u250a acute promyelocytic leukemia \u250a mondo:0012883 \u250a aml1 \u250a q59 \u250a aml3 \u250a apl124 \u250a apl223 \u250a apl147 \u250a aml183 \u250a aml127 \u250a aml334 \u250a aml327 \u250a apl142 \u250a aml314 \u250a apl218 \u250a aml116 \u250a apl224 \u250a x_bothumap \u250a x_pca \u250a x_projected \u250a x_projectedmean \u250a x_tsneni \u250a x_umapni \u250a https://cellxgene.cziscience.com/e/b3a5a10f-b1cb-4e8e-abce-bf345448625b.cxg/ \u250a gene \u250a 458 \u250a ncbitaxon:9606 \u250a true \u250a 107.31406319255366 \u250a homo sapiens \u250a ncbitaxon:9606 \u250a 31586 \u250a 2022-08-16t21:57:59+00:00 \u250a raw.x \u250a 2025-10-24t21:07:21+00:00 \u250a 7.0.0 \u250a unknown \u250a unknown \u250a female \u250a pato:0000383 \u250a male \u250a pato:0000384 \u250a cell \u250a bone marrow \u250a uberon:0002371 \u250a tissue \u250a bone marrow \u250a uberon:0002371 \u250a bone-marrow \u250a 15 leukemic bone marrow donors \u250a false \u250a nat immunol \u250a triana \u250a sergio \u250a vonficht \u250a dominik \u250a jopp-saile \u250a lea \u250a raffel \u250a simon \u250a lutz \u250a raphael \u250a leonce \u250a daniel \u250a antes \u250a magdalena \u250a hern\u00e1ndez-malmierca \u250a pablo \u250a ordo\u00f1ez-rueda \u250a diana \u250a ramasz \u250a be\u00e1ta \u250a boch \u250a tobias \u250a jann \u250a johann-christoph \u250a nowak \u250a daniel \u250a hofmann \u250a wolf-karsten \u250a m\u00fcller-tidow \u250a carsten \u250a h\u00fcbschmann \u250a daniel \u250a alexandrov \u250a theodore \u250a benes \u250a vladimir \u250a trumpp \u250a andreas \u250a paulsen \u250a malte \u250a velten \u250a lars \u250a haas \u250a simon \u250a sergio \u250a triana \u250a 22",
+      "self_reported_ethnicity": [
+        {
+          "label": "unknown",
+          "ontology_term_id": "unknown"
+        }
+      ],
+      "sex": [
+        {
+          "label": "female",
+          "ontology_term_id": "PATO:0000383"
+        },
+        {
+          "label": "male",
+          "ontology_term_id": "PATO:0000384"
+        }
+      ],
+      "spatial": null,
+      "statistics": {
+        "viewed": 0
+      },
+      "study_id": "93eebe82-d8c3-41bc-a906-63b5b5f24a9d",
+      "study_journal": "Nat Immunol",
+      "suspension_type": [
+        "cell"
+      ],
+      "tissue": [
+        {
+          "label": "bone marrow",
+          "ontology_term_id": "UBERON:0002371",
+          "tissue_type": "tissue",
+          "top-organ-name": "bone marrow",
+          "top-organ-uberon": "UBERON:0002371",
+          "top-organ-asset-key": "bone-marrow"
+        }
+      ],
+      "title": "15 leukemic bone marrow donors",
+      "tombstone": false,
+      "x_approximate_distribution": null,
+      "administration": {
+        "explorer_enabled": true
+      },
+      "search_result_groups": [
+        "metadata"
+      ],
+      "journal_resolution": {
+        "id": "100941354",
+        "long_name": "Nature immunology",
+        "icon_url": null
+      }
+    },
+    {
+      "_id": "93eebe82-d8c3-41bc-a906-63b5b5f24a9d::cd4c96bb-ad66-4e83-ba9e-a7df8790eb12",
+      "assay": [
+        {
+          "label": "BD Rhapsody Targeted mRNA",
+          "ontology_term_id": "EFO:0700004"
+        }
+      ],
+      "assets": [
+        {
+          "filesize": 59445406,
+          "filetype": "H5AD",
+          "url": "https://datasets.cellxgene.cziscience.com/e8aef9d1-b635-4b5e-9421-56230a77f3db.h5ad"
+        }
+      ],
+      "authors": [
+        {
+          "family": "Triana",
+          "given": "Sergio"
+        },
+        {
+          "family": "Vonficht",
+          "given": "Dominik"
+        },
+        {
+          "family": "Jopp-Saile",
+          "given": "Lea"
+        },
+        {
+          "family": "Raffel",
+          "given": "Simon"
+        },
+        {
+          "family": "Lutz",
+          "given": "Raphael"
+        },
+        {
+          "family": "Leonce",
+          "given": "Daniel"
+        },
+        {
+          "family": "Antes",
+          "given": "Magdalena"
+        },
+        {
+          "family": "Hern\u00e1ndez-Malmierca",
+          "given": "Pablo"
+        },
+        {
+          "family": "Ordo\u00f1ez-Rueda",
+          "given": "Diana"
+        },
+        {
+          "family": "Ramasz",
+          "given": "Be\u00e1ta"
+        },
+        {
+          "family": "Boch",
+          "given": "Tobias"
+        },
+        {
+          "family": "Jann",
+          "given": "Johann-Christoph"
+        },
+        {
+          "family": "Nowak",
+          "given": "Daniel"
+        },
+        {
+          "family": "Hofmann",
+          "given": "Wolf-Karsten"
+        },
+        {
+          "family": "M\u00fcller-Tidow",
+          "given": "Carsten"
+        },
+        {
+          "family": "H\u00fcbschmann",
+          "given": "Daniel"
+        },
+        {
+          "family": "Alexandrov",
+          "given": "Theodore"
+        },
+        {
+          "family": "Benes",
+          "given": "Vladimir"
+        },
+        {
+          "family": "Trumpp",
+          "given": "Andreas"
+        },
+        {
+          "family": "Paulsen",
+          "given": "Malte"
+        },
+        {
+          "family": "Velten",
+          "given": "Lars"
+        },
+        {
+          "family": "Haas",
+          "given": "Simon"
+        }
+      ],
+      "cell_count": 49057,
+      "cell_type": [
+        {
+          "label": "CD16-negative, CD56-bright natural killer cell, human",
+          "ontology_term_id": "CL:0000938"
+        },
+        {
+          "label": "CD16-positive, CD56-dim natural killer cell, human",
+          "ontology_term_id": "CL:0000939"
+        },
+        {
+          "label": "CD4-positive, alpha-beta cytotoxic T cell",
+          "ontology_term_id": "CL:0000934"
+        },
+        {
+          "label": "CD4-positive, alpha-beta memory T cell",
+          "ontology_term_id": "CL:0000897"
+        },
+        {
+          "label": "CD8-positive, alpha-beta memory T cell",
+          "ontology_term_id": "CL:0000909"
+        },
+        {
+          "label": "basophil mast progenitor cell",
+          "ontology_term_id": "CL:0002028"
+        },
+        {
+          "label": "central memory CD8-positive, alpha-beta T cell",
+          "ontology_term_id": "CL:0000907"
+        },
+        {
+          "label": "class switched memory B cell",
+          "ontology_term_id": "CL:0000972"
+        },
+        {
+          "label": "classical monocyte",
+          "ontology_term_id": "CL:0000860"
+        },
+        {
+          "label": "common dendritic progenitor",
+          "ontology_term_id": "CL:0001029"
+        },
+        {
+          "label": "conventional dendritic cell",
+          "ontology_term_id": "CL:0000990"
+        },
+        {
+          "label": "early promyelocyte",
+          "ontology_term_id": "CL:0002154"
+        },
+        {
+          "label": "effector memory CD8-positive, alpha-beta T cell",
+          "ontology_term_id": "CL:0000913"
+        },
+        {
+          "label": "erythroid lineage cell",
+          "ontology_term_id": "CL:0000764"
+        },
+        {
+          "label": "erythroid progenitor cell",
+          "ontology_term_id": "CL:0000038"
+        },
+        {
+          "label": "fraction A pre-pro B cell",
+          "ontology_term_id": "CL:0002045"
+        },
+        {
+          "label": "gamma-delta T cell",
+          "ontology_term_id": "CL:0000798"
+        },
+        {
+          "label": "hematopoietic multipotent progenitor cell",
+          "ontology_term_id": "CL:0000837"
+        },
+        {
+          "label": "immature B cell",
+          "ontology_term_id": "CL:0000816"
+        },
+        {
+          "label": "late promyelocyte",
+          "ontology_term_id": "CL:0002151"
+        },
+        {
+          "label": "lymphoid lineage restricted progenitor cell",
+          "ontology_term_id": "CL:0000838"
+        },
+        {
+          "label": "megakaryocyte progenitor cell",
+          "ontology_term_id": "CL:0000553"
+        },
+        {
+          "label": "megakaryocyte-erythroid progenitor cell",
+          "ontology_term_id": "CL:0000050"
+        },
+        {
+          "label": "memory B cell",
+          "ontology_term_id": "CL:0000787"
+        },
+        {
+          "label": "mesenchymal cell",
+          "ontology_term_id": "CL:0008019"
+        },
+        {
+          "label": "myelocyte",
+          "ontology_term_id": "CL:0002193"
+        },
+        {
+          "label": "naive B cell",
+          "ontology_term_id": "CL:0000788"
+        },
+        {
+          "label": "naive thymus-derived CD4-positive, alpha-beta T cell",
+          "ontology_term_id": "CL:0000895"
+        },
+        {
+          "label": "naive thymus-derived CD8-positive, alpha-beta T cell",
+          "ontology_term_id": "CL:0000900"
+        },
+        {
+          "label": "natural killer cell",
+          "ontology_term_id": "CL:0000623"
+        },
+        {
+          "label": "non-classical monocyte",
+          "ontology_term_id": "CL:0000875"
+        },
+        {
+          "label": "plasma cell",
+          "ontology_term_id": "CL:0000786"
+        },
+        {
+          "label": "plasmacytoid dendritic cell",
+          "ontology_term_id": "CL:0000784"
+        },
+        {
+          "label": "pre-natural killer cell",
+          "ontology_term_id": "CL:0000937"
+        },
+        {
+          "label": "precursor B cell",
+          "ontology_term_id": "CL:0000817"
+        },
+        {
+          "label": "pro-B cell",
+          "ontology_term_id": "CL:0000826"
+        },
+        {
+          "label": "progenitor cell",
+          "ontology_term_id": "CL:0011026"
+        },
+        {
+          "label": "small pre-B-II cell",
+          "ontology_term_id": "CL:0000954"
+        },
+        {
+          "label": "unswitched memory B cell",
+          "ontology_term_id": "CL:0000970"
+        }
+      ],
+      "citation": "Publication: https://doi.org/10.1038/s41590-021-01059-0 Dataset Version: https://datasets.cellxgene.cziscience.com/e8aef9d1-b635-4b5e-9421-56230a77f3db.h5ad curated and distributed by CZ CELLxGENE Discover in Collection: https://cellxgene.cziscience.com/collections/93eebe82-d8c3-41bc-a906-63b5b5f24a9d",
+      "default_embedding": "X_mofaumap",
+      "development_stage": [
+        {
+          "label": "25-year-old stage",
+          "ontology_term_id": "HsapDv:0000119"
+        },
+        {
+          "label": "26-year-old stage",
+          "ontology_term_id": "HsapDv:0000120"
+        },
+        {
+          "label": "34-year-old stage",
+          "ontology_term_id": "HsapDv:0000128"
+        },
+        {
+          "label": "59-year-old stage",
+          "ontology_term_id": "HsapDv:0000153"
+        },
+        {
+          "label": "65-year-old stage",
+          "ontology_term_id": "HsapDv:0000159"
+        },
+        {
+          "label": "69-year-old stage",
+          "ontology_term_id": "HsapDv:0000163"
+        }
+      ],
+      "disease": [
+        {
+          "label": "normal",
+          "ontology_term_id": "PATO:0000461"
+        }
+      ],
+      "donor_id": [
+        "Aged2",
+        "Aged1",
+        "Aged3",
+        "BM2",
+        "BM3",
+        "BM1"
+      ],
+      "embeddings": [
+        "X_mofa",
+        "X_mofatsne",
+        "X_mofaumap",
+        "X_pca",
+        "X_projected",
+        "X_projectedmean",
+        "X_tsne",
+        "X_tsneni",
+        "X_umap",
+        "X_umapni"
+      ],
+      "experiment_id": "cd4c96bb-ad66-4e83-ba9e-a7df8790eb12",
+      "experiment_version_id": "e8aef9d1-b635-4b5e-9421-56230a77f3db",
+      "explorer_url": "https://cellxgene.cziscience.com/e/cd4c96bb-ad66-4e83-ba9e-a7df8790eb12.cxg/",
+      "feature_biotype": [
+        "gene"
+      ],
+      "feature_count": 461,
+      "feature_reference": [
+        "NCBITaxon:9606"
+      ],
+      "id": "93eebe82-d8c3-41bc-a906-63b5b5f24a9d::cd4c96bb-ad66-4e83-ba9e-a7df8790eb12",
+      "is_primary_data": [
+        true
+      ],
+      "mean_genes_per_cell": 112.97052408422854,
+      "organism": [
+        {
+          "label": "Homo sapiens",
+          "ontology_term_id": "NCBITaxon:9606"
+        }
+      ],
+      "primary_author": {
+        "given": "Sergio",
+        "family": "Triana"
+      },
+      "primary_author_count": 22,
+      "primary_cell_count": 49057,
+      "published_at": "2022-08-16T21:57:59+00:00",
+      "raw_data_location": "raw.X",
+      "revised_at": "2025-10-24T21:07:21+00:00",
+      "schema_version": "7.0.0",
+      "search_text": "93eebe82-d8c3-41bc-a906-63b5b5f24a9d::cd4c96bb-ad66-4e83-ba9e-a7df8790eb12 \u250a 93eebe82-d8c3-41bc-a906-63b5b5f24a9d::cd4c96bb-ad66-4e83-ba9e-a7df8790eb12 \u250a 93eebe82-d8c3-41bc-a906-63b5b5f24a9d \u250a cd4c96bb-ad66-4e83-ba9e-a7df8790eb12 \u250a 0 \u250a bd rhapsody targeted mrna \u250a efo:0700004 \u250a 59445406 \u250a h5ad \u250a https://datasets.cellxgene.cziscience.com/e8aef9d1-b635-4b5e-9421-56230a77f3db.h5ad \u250a 49057 \u250a cd16-negative, cd56-bright natural killer cell, human \u250a cl:0000938 \u250a cd16-positive, cd56-dim natural killer cell, human \u250a cl:0000939 \u250a cd4-positive, alpha-beta cytotoxic t cell \u250a cl:0000934 \u250a cd4-positive, alpha-beta memory t cell \u250a cl:0000897 \u250a cd8-positive, alpha-beta memory t cell \u250a cl:0000909 \u250a basophil mast progenitor cell \u250a cl:0002028 \u250a central memory cd8-positive, alpha-beta t cell \u250a cl:0000907 \u250a class switched memory b cell \u250a cl:0000972 \u250a classical monocyte \u250a cl:0000860 \u250a common dendritic progenitor \u250a cl:0001029 \u250a conventional dendritic cell \u250a cl:0000990 \u250a early promyelocyte \u250a cl:0002154 \u250a effector memory cd8-positive, alpha-beta t cell \u250a cl:0000913 \u250a erythroid lineage cell \u250a cl:0000764 \u250a erythroid progenitor cell \u250a cl:0000038 \u250a fraction a pre-pro b cell \u250a cl:0002045 \u250a gamma-delta t cell \u250a cl:0000798 \u250a hematopoietic multipotent progenitor cell \u250a cl:0000837 \u250a immature b cell \u250a cl:0000816 \u250a late promyelocyte \u250a cl:0002151 \u250a lymphoid lineage restricted progenitor cell \u250a cl:0000838 \u250a megakaryocyte progenitor cell \u250a cl:0000553 \u250a megakaryocyte-erythroid progenitor cell \u250a cl:0000050 \u250a memory b cell \u250a cl:0000787 \u250a mesenchymal cell \u250a cl:0008019 \u250a myelocyte \u250a cl:0002193 \u250a naive b cell \u250a cl:0000788 \u250a naive thymus-derived cd4-positive, alpha-beta t cell \u250a cl:0000895 \u250a naive thymus-derived cd8-positive, alpha-beta t cell \u250a cl:0000900 \u250a natural killer cell \u250a cl:0000623 \u250a non-classical monocyte \u250a cl:0000875 \u250a plasma cell \u250a cl:0000786 \u250a plasmacytoid dendritic cell \u250a cl:0000784 \u250a pre-natural killer cell \u250a cl:0000937 \u250a precursor b cell \u250a cl:0000817 \u250a pro-b cell \u250a cl:0000826 \u250a progenitor cell \u250a cl:0011026 \u250a small pre-b-ii cell \u250a cl:0000954 \u250a unswitched memory b cell \u250a cl:0000970 \u250a publication: https://doi.org/10.1038/s41590-021-01059-0 dataset version: https://datasets.cellxgene.cziscience.com/e8aef9d1-b635-4b5e-9421-56230a77f3db.h5ad curated and distributed by cz cellxgene discover in collection: https://cellxgene.cziscience.com/collections/93eebe82-d8c3-41bc-a906-63b5b5f24a9d \u250a e8aef9d1-b635-4b5e-9421-56230a77f3db \u250a x_mofaumap \u250a 25-year-old stage \u250a hsapdv:0000119 \u250a 26-year-old stage \u250a hsapdv:0000120 \u250a 34-year-old stage \u250a hsapdv:0000128 \u250a 59-year-old stage \u250a hsapdv:0000153 \u250a 65-year-old stage \u250a hsapdv:0000159 \u250a 69-year-old stage \u250a hsapdv:0000163 \u250a normal \u250a pato:0000461 \u250a aged2 \u250a aged1 \u250a aged3 \u250a bm2 \u250a bm3 \u250a bm1 \u250a x_mofa \u250a x_mofatsne \u250a x_mofaumap \u250a x_pca \u250a x_projected \u250a x_projectedmean \u250a x_tsne \u250a x_tsneni \u250a x_umap \u250a x_umapni \u250a https://cellxgene.cziscience.com/e/cd4c96bb-ad66-4e83-ba9e-a7df8790eb12.cxg/ \u250a gene \u250a 461 \u250a ncbitaxon:9606 \u250a true \u250a 112.97052408422854 \u250a homo sapiens \u250a ncbitaxon:9606 \u250a 49057 \u250a 2022-08-16t21:57:59+00:00 \u250a raw.x \u250a 2025-10-24t21:07:21+00:00 \u250a 7.0.0 \u250a unknown \u250a unknown \u250a female \u250a pato:0000383 \u250a male \u250a pato:0000384 \u250a cell \u250a bone marrow \u250a uberon:0002371 \u250a tissue \u250a bone marrow \u250a uberon:0002371 \u250a bone-marrow \u250a 3 healthy young and 3 healthy old bone marrow donors (reference sample) \u250a false \u250a nat immunol \u250a triana \u250a sergio \u250a vonficht \u250a dominik \u250a jopp-saile \u250a lea \u250a raffel \u250a simon \u250a lutz \u250a raphael \u250a leonce \u250a daniel \u250a antes \u250a magdalena \u250a hern\u00e1ndez-malmierca \u250a pablo \u250a ordo\u00f1ez-rueda \u250a diana \u250a ramasz \u250a be\u00e1ta \u250a boch \u250a tobias \u250a jann \u250a johann-christoph \u250a nowak \u250a daniel \u250a hofmann \u250a wolf-karsten \u250a m\u00fcller-tidow \u250a carsten \u250a h\u00fcbschmann \u250a daniel \u250a alexandrov \u250a theodore \u250a benes \u250a vladimir \u250a trumpp \u250a andreas \u250a paulsen \u250a malte \u250a velten \u250a lars \u250a haas \u250a simon \u250a sergio \u250a triana \u250a 22",
+      "self_reported_ethnicity": [
+        {
+          "label": "unknown",
+          "ontology_term_id": "unknown"
+        }
+      ],
+      "sex": [
+        {
+          "label": "female",
+          "ontology_term_id": "PATO:0000383"
+        },
+        {
+          "label": "male",
+          "ontology_term_id": "PATO:0000384"
+        }
+      ],
+      "spatial": null,
+      "statistics": {
+        "viewed": 0
+      },
+      "study_id": "93eebe82-d8c3-41bc-a906-63b5b5f24a9d",
+      "study_journal": "Nat Immunol",
+      "suspension_type": [
+        "cell"
+      ],
+      "tissue": [
+        {
+          "label": "bone marrow",
+          "ontology_term_id": "UBERON:0002371",
+          "tissue_type": "tissue",
+          "top-organ-name": "bone marrow",
+          "top-organ-uberon": "UBERON:0002371",
+          "top-organ-asset-key": "bone-marrow"
+        }
+      ],
+      "title": "3 healthy young and 3 healthy old bone marrow donors (Reference sample)",
+      "tombstone": false,
+      "x_approximate_distribution": null,
+      "administration": {
+        "explorer_enabled": true
+      },
+      "search_result_groups": [
+        "metadata"
+      ],
+      "journal_resolution": {
+        "id": "100941354",
+        "long_name": "Nature immunology",
+        "icon_url": null
+      }
+    }
+  ],
+  "total": 429,
+  "_note": "First 2 experiments only; full file is experiments.json"
+}
