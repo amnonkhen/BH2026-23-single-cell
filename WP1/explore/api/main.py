@@ -152,10 +152,95 @@ class FacetByRequest(BaseModel):
     max_facet_values: int = 50
 
 
+class PivotRequest(BaseModel):
+    row_field: str
+    col_field: str
+    q: str = "*"
+    filter_by: str | None = None
+    max_rows: int = Field(default=20, ge=1, le=50)
+    max_cols: int = Field(default=20, ge=1, le=50)
+    query_by: str = "title,search_blob,cell_type,tissue,assay,disease,organism"
+
+
 class McpToolDescriptor(BaseModel):
     name: str
     description: str
     input_schema: dict[str, Any]
+
+
+def _field_values(raw: Any) -> list[str]:
+    if raw is None:
+        return []
+    if isinstance(raw, list):
+        out: list[str] = []
+        seen: set[str] = set()
+        for item in raw:
+            text = str(item).strip()
+            if text and text != "unknown" and text not in seen:
+                seen.add(text)
+                out.append(text)
+        return out
+    text = str(raw).strip()
+    if text and text != "unknown":
+        return [text]
+    return []
+
+
+def build_pivot(
+    docs: list[dict[str, Any]],
+    *,
+    row_field: str,
+    col_field: str,
+    max_rows: int,
+    max_cols: int,
+) -> dict[str, Any]:
+    """Cross-tab unique experiment counts for two facet fields."""
+    cell_ids: dict[tuple[str, str], set[str]] = {}
+    row_ids: dict[str, set[str]] = {}
+    col_ids: dict[str, set[str]] = {}
+
+    for doc in docs:
+        doc_id = str(doc.get("id") or doc.get("experiment_id") or id(doc))
+        rows = _field_values(doc.get(row_field)) or ["(none)"]
+        cols = _field_values(doc.get(col_field)) or ["(none)"]
+        for row in rows:
+            row_ids.setdefault(row, set()).add(doc_id)
+            for col in cols:
+                col_ids.setdefault(col, set()).add(doc_id)
+                cell_ids.setdefault((row, col), set()).add(doc_id)
+
+    ranked_rows = sorted(
+        row_ids.items(),
+        key=lambda item: (-len(item[1]), item[0] == "(none)", item[0].lower()),
+    )
+    ranked_cols = sorted(
+        col_ids.items(),
+        key=lambda item: (-len(item[1]), item[0] == "(none)", item[0].lower()),
+    )
+    selected_rows = [name for name, _ in ranked_rows[:max_rows]]
+    selected_cols = [name for name, _ in ranked_cols[:max_cols]]
+
+    matrix = [
+        [len(cell_ids.get((row, col), set())) for col in selected_cols]
+        for row in selected_rows
+    ]
+    row_totals = [len(row_ids[row]) for row in selected_rows]
+    col_totals = [len(col_ids[col]) for col in selected_cols]
+    max_cell = max((value for row in matrix for value in row), default=0)
+
+    return {
+        "row_field": row_field,
+        "col_field": col_field,
+        "rows": selected_rows,
+        "cols": selected_cols,
+        "matrix": matrix,
+        "row_totals": row_totals,
+        "col_totals": col_totals,
+        "max_cell": max_cell,
+        "truncated_rows": max(0, len(ranked_rows) - len(selected_rows)),
+        "truncated_cols": max(0, len(ranked_cols) - len(selected_cols)),
+        "docs_scanned": len(docs),
+    }
 
 
 @app.get("/health")
@@ -200,6 +285,74 @@ async def proxy_multi_search(payload: dict[str, Any]) -> Any:
     if response.status_code >= 400:
         raise HTTPException(status_code=response.status_code, detail=response.text)
     return response.json()
+
+
+@app.post("/api/pivot")
+def pivot_counts(body: PivotRequest) -> Any:
+    """Row × column dataset counts for two facet fields (heatmap/pivot).
+
+    Respects Typesense `q` + `filter_by` so InstantSearch refinements can be
+    forwarded from the UI. Multi-valued fields contribute to each matching cell.
+    """
+    if body.row_field not in FACET_FIELDS or body.col_field not in FACET_FIELDS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"row_field and col_field must be one of: {FACET_FIELDS}",
+        )
+    if body.row_field == body.col_field:
+        raise HTTPException(
+            status_code=400, detail="row_field and col_field must be different"
+        )
+
+    client = typesense_client()
+    include_fields = ",".join(
+        sorted({"id", "experiment_id", body.row_field, body.col_field})
+    )
+    page = 1
+    per_page = 250
+    docs: list[dict[str, Any]] = []
+    found = 0
+    try:
+        while True:
+            params: dict[str, Any] = {
+                "q": body.q or "*",
+                "query_by": body.query_by,
+                "per_page": per_page,
+                "page": page,
+                "include_fields": include_fields,
+            }
+            if body.filter_by:
+                params["filter_by"] = body.filter_by
+            result = client.collections[COLLECTION].documents.search(params)
+            found = int(result.get("found") or 0)
+            hits = result.get("hits") or []
+            for hit in hits:
+                doc = hit.get("document") or {}
+                if isinstance(doc, dict):
+                    docs.append(doc)
+            if page * per_page >= found or not hits:
+                break
+            page += 1
+            if page > 20:  # hard stop (~5k docs) for safety
+                break
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+    pivot = build_pivot(
+        docs,
+        row_field=body.row_field,
+        col_field=body.col_field,
+        max_rows=body.max_rows,
+        max_cols=body.max_cols,
+    )
+    pivot.update(
+        {
+            "found": found,
+            "q": body.q or "*",
+            "filter_by": body.filter_by,
+        }
+    )
+    return pivot
 
 
 @app.get("/mcp/tools", response_model=list[McpToolDescriptor])

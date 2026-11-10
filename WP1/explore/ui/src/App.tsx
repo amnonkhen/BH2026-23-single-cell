@@ -30,7 +30,7 @@ const VIEW_STORAGE_KEY = "fenix-explore-results-view";
 function loadStoredView(): ResultsView {
   try {
     const value = localStorage.getItem(VIEW_STORAGE_KEY);
-    if (value === "cards" || value === "table") return value;
+    if (value === "cards" || value === "table" || value === "pivot") return value;
   } catch {
     // ignore private-mode / SSR storage failures
   }
@@ -169,7 +169,7 @@ export default function App() {
 
           <section className="results" data-view={view}>
             <ResultsPanel view={view} />
-            <Pagination />
+            {view !== "pivot" ? <Pagination /> : null}
           </section>
         </div>
       </InstantSearch>

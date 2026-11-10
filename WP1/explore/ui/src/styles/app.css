@@ -470,6 +470,147 @@ a {
   }
 }
 
+.pivot-panel {
+  display: grid;
+  gap: 0.75rem;
+  animation: crossfade 220ms ease both;
+}
+
+.pivot-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 0.85rem;
+  align-items: center;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.pivot-swap {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--accent);
+  width: 2.2rem;
+  height: 2.2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.pivot-swap:hover {
+  border-color: rgba(15, 106, 92, 0.4);
+  background: var(--accent-soft);
+}
+
+.pivot-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 0.9rem;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.pivot-filter {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.12rem 0.55rem;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.pivot-scroll {
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: var(--shadow);
+  max-height: min(70vh, 720px);
+}
+
+.pivot-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 100%;
+  font-size: 0.82rem;
+}
+
+.pivot-table th,
+.pivot-table td {
+  padding: 0.45rem 0.5rem;
+  border-bottom: 1px solid rgba(20, 33, 43, 0.08);
+  border-right: 1px solid rgba(20, 33, 43, 0.06);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.pivot-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #f4f8f6;
+  color: var(--ink);
+  font-weight: 600;
+  max-width: 7.5rem;
+  vertical-align: bottom;
+}
+
+.pivot-table thead th span,
+.pivot-table tbody th span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 7.2rem;
+}
+
+.pivot-table thead th em,
+.pivot-table tbody th em {
+  display: block;
+  margin-top: 0.15rem;
+  font-style: normal;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+.pivot-table .pivot-corner {
+  left: 0;
+  z-index: 3;
+  text-align: left;
+  min-width: 8.5rem;
+  font-family: var(--serif);
+  font-size: 0.9rem;
+}
+
+.pivot-table tbody th {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: #f7faf8;
+  text-align: left;
+  font-weight: 600;
+  max-width: 10rem;
+}
+
+.pivot-table td {
+  font-variant-numeric: tabular-nums;
+  min-width: 2.4rem;
+  transition: transform 120ms ease;
+}
+
+.pivot-table td:hover {
+  outline: 2px solid rgba(15, 106, 92, 0.35);
+  outline-offset: -2px;
+  z-index: 1;
+  position: relative;
+}
+
 .hit {
   border: 1px solid var(--line);
   border-radius: var(--radius);

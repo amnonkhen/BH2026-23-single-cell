@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-export type ResultsView = "cards" | "table";
+export type ResultsView = "cards" | "table" | "pivot";
 
 const OPTIONS: { id: ResultsView; label: string; icon: ReactNode }[] = [
   {
@@ -23,6 +23,23 @@ const OPTIONS: { id: ResultsView; label: string; icon: ReactNode }[] = [
         <rect x="1.5" y="2" width="13" height="2.2" rx="0.6" fill="currentColor" />
         <rect x="1.5" y="6.9" width="13" height="2.2" rx="0.6" fill="currentColor" />
         <rect x="1.5" y="11.8" width="13" height="2.2" rx="0.6" fill="currentColor" />
+      </svg>
+    ),
+  },
+  {
+    id: "pivot",
+    label: "Pivot",
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+        <rect x="1.5" y="1.5" width="4" height="4" rx="0.8" fill="currentColor" opacity="0.95" />
+        <rect x="6.5" y="1.5" width="4" height="4" rx="0.8" fill="currentColor" opacity="0.65" />
+        <rect x="11.5" y="1.5" width="3" height="4" rx="0.8" fill="currentColor" opacity="0.4" />
+        <rect x="1.5" y="6.5" width="4" height="4" rx="0.8" fill="currentColor" opacity="0.7" />
+        <rect x="6.5" y="6.5" width="4" height="4" rx="0.8" fill="currentColor" opacity="0.9" />
+        <rect x="11.5" y="6.5" width="3" height="4" rx="0.8" fill="currentColor" opacity="0.55" />
+        <rect x="1.5" y="11.5" width="4" height="3" rx="0.8" fill="currentColor" opacity="0.45" />
+        <rect x="6.5" y="11.5" width="4" height="3" rx="0.8" fill="currentColor" opacity="0.6" />
+        <rect x="11.5" y="11.5" width="3" height="3" rx="0.8" fill="currentColor" opacity="0.3" />
       </svg>
     ),
   },

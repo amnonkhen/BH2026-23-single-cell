@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useHits } from "react-instantsearch";
 import { GROUP_BY_OPTIONS, groupHits, type GroupByField } from "./groupBy";
 import { Hit, hitTitle, joinValues, type ExperimentHit } from "./Hit";
+import { PivotHeatmap } from "./PivotHeatmap";
 import type { ResultsView } from "./ViewToggle";
 
 const GROUP_STORAGE_KEY = "fenix-explore-group-by";
@@ -58,6 +59,10 @@ export function ResultsPanel({ view }: Props) {
       // ignore
     }
   }, [groupBy]);
+
+  if (view === "pivot") {
+    return <PivotHeatmap />;
+  }
 
   if (!items.length) {
     return <p className="empty-results">No experiments match these filters.</p>;
