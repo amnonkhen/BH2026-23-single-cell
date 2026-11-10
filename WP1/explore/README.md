@@ -1,13 +1,16 @@
-# Fenix experiment explore stack
+# Unified experiment explore stack (Fenix + Single Cell Portal)
 
-Polished local explore stack for [`WP1/fenix/experiments.json`](../fenix/experiments.json):
+Polished local explore stack over:
+
+- [`WP1/fenix/experiments.json`](../fenix/experiments.json) → `source=fenix`
+- [`WP1/single_cell_portal/studies.json`](../single_cell_portal/studies.json) → `source=single_cell_portal`
 
 | Piece | Role |
 |-------|------|
 | **Typesense** (Docker Compose) | Faceted search index |
-| **Python indexer** | Flattens experiment JSON → Typesense docs |
-| **FastAPI** | Holds admin API key, mints search-only key, optional search proxy, MCP-ready tool routes |
-| **React + Vite + InstantSearch** | Search box, facets, hits list via `typesense-instantsearch-adapter` |
+| **Python indexer** | Flattens both catalogs → Typesense docs with `source` |
+| **FastAPI** | Holds admin API key, mints search-only key, pivot API, MCP-ready tool routes |
+| **React + Vite + InstantSearch** | Search, facets, Cards/Table/Pivot; clickable pivot cells |
 
 The browser **never** receives the Typesense admin key. InstantSearch loads `/api/search-config` and uses a **search-only** key.
 
@@ -16,7 +19,9 @@ The browser **never** receives the Typesense admin key. InstantSearch loads `/ap
 - Docker + Docker Compose
 - Python 3.11+
 - Node.js 20+ (for the UI)
-- Fenix catalog at `WP1/fenix/experiments.json` (this branch includes it; otherwise run `python3 WP1/fenix/download_experiments.py`)
+- Catalogs:
+  - Fenix: `python3 WP1/fenix/download_experiments.py` (or use the cached file)
+  - SCP: `python3 WP1/single_cell_portal/download_studies.py --summarize`
 
 ## Quick start
 
@@ -27,13 +32,13 @@ cp -n .env.example .env   # optional; defaults work locally
 # 1) Typesense
 docker compose up -d
 
-# 2) Index experiments
+# 2) Index both catalogs into one collection
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r indexer/requirements.txt -r api/requirements.txt
 python indexer/index_experiments.py --recreate
 
-# 3) API (search-only keys + MCP stubs)
+# 3) API (search-only keys + MCP stubs + pivot)
 cd api && uvicorn main:app --reload --port 8000
 # → http://127.0.0.1:8000/docs
 
@@ -48,26 +53,32 @@ Vite proxies `/api`, `/mcp`, and `/health` to the FastAPI process. InstantSearch
 
 ## What gets indexed
 
-Each experiment becomes one Typesense document with facet fields:
+Every document has a faceted **`source`** (`fenix` or `single_cell_portal`) plus shared facet fields:
 
-| Field | Source |
-|-------|--------|
-| `organism` | `organism[].label` |
-| `top_organ` | `tissue[].top-organ-name` |
-| `tissue` | `tissue[].label` |
-| `tissue_type` | `tissue[].tissue_type` |
-| `assay` / `disease` / `sex` / … | `*.label` (or string lists) |
-| `suspension_type` | string list |
-| `study_journal` | journal fields |
-| `cell_type` | high-cardinality facet + search |
-| `cell_count`, `feature_count`, `published_at` | metrics / sort |
-| `search_blob` | concatenated free-text |
+| Field | Fenix | Single Cell Portal |
+|-------|-------|--------------------|
+| `organism` | `organism[].label` | `metadata.species` |
+| `top_organ` | `tissue[].top-organ-name` | `metadata.organ` (also used as tissue) |
+| `tissue` | `tissue[].label` | `metadata.organ` |
+| `assay` | `assay[].label` | `metadata.library_preparation_protocol` |
+| `disease` | `disease[].label` | `metadata.disease` |
+| `sex` | `sex[].label` | `metadata.sex` |
+| `cell_count` | `cell_count` | `cell_count` |
+| `feature_count` | `feature_count` | `gene_count` |
+| `explorer_url` | CELLxGENE explorer | SCP study URL |
 
-Re-index after refreshing the Fenix snapshot:
+Document ids are namespaced (`fenix::…`, `scp::SCP####`) to avoid collisions.
+
+Re-index after refreshing either snapshot:
 
 ```bash
 python indexer/index_experiments.py --recreate
 ```
+
+## UI views
+
+- **Cards / Table** — InstantSearch hits; Table has **Group by** section headers
+- **Pivot** — row × column heatmap of dataset counts (respects query + facets). **Click a cell** to apply InstantSearch filters for those attribute values and switch to **Table**
 
 ## API & MCP stubs
 
@@ -76,6 +87,7 @@ python indexer/index_experiments.py --recreate
 | `GET /health` | API + Typesense health |
 | `GET /api/search-config` | Host/port/collection + **search-only** key for InstantSearch |
 | `POST /api/multi_search` | Optional proxy (admin key stays server-side) |
+| `POST /api/pivot` | Row × column dataset counts |
 | `GET /mcp/tools` | Tool descriptors (`search_experiments`, `facet_by`) |
 | `POST /mcp/tools/search_experiments` | Server-side search tool |
 | `POST /mcp/tools/facet_by` | Facet counts for one field |
@@ -84,11 +96,13 @@ python indexer/index_experiments.py --recreate
 ### Example tool calls
 
 ```bash
-curl -s 'http://127.0.0.1:8000/mcp/tools/search_experiments?q=brain&per_page=3' | jq '.found'
-
 curl -s -X POST http://127.0.0.1:8000/mcp/tools/facet_by \
   -H 'content-type: application/json' \
-  -d '{"field":"top_organ","filter_by":"organism:=`Homo sapiens`"}' | jq .
+  -d '{"field":"source"}' | jq .
+
+curl -s -X POST http://127.0.0.1:8000/api/pivot \
+  -H 'content-type: application/json' \
+  -d '{"row_field":"source","col_field":"organism","max_rows":10,"max_cols":10}' | jq '{found,rows,cols,max_cell}'
 ```
 
 ### Wiring a real MCP later
@@ -99,14 +113,16 @@ Wrap the same handlers with the MCP Python SDK / FastMCP (`@mcp.tool()` → call
 
 ```
 WP1/explore/
-  docker-compose.yml      # Typesense
+  docker-compose.yml
   .env.example
   indexer/index_experiments.py
-  api/main.py             # FastAPI + MCP stubs
-  ui/                     # React + Vite + InstantSearch
+  api/main.py
+  ui/
   README.md
+WP1/fenix/                 # Fenix catalog cache
+WP1/single_cell_portal/    # SCP catalog cache
 ```
 
 ## Preference note
 
-This repo’s explore path is **Typesense + React InstantSearch (Vite) + FastAPI** for API keys and MCP/chat tools.
+Explore path: **Typesense + React InstantSearch (Vite) + FastAPI** for API keys and MCP/chat tools, with a unified multi-source index.

@@ -14,6 +14,7 @@ import { ViewToggle, type ResultsView } from "./components/ViewToggle";
 import { createSearchClient, loadSearchConfig, type SearchConfig } from "./typesense";
 
 const FACET_PANELS: { attribute: string; title: string; searchable?: boolean }[] = [
+  { attribute: "source", title: "Source" },
   { attribute: "organism", title: "Organism" },
   { attribute: "top_organ", title: "Top organ", searchable: true },
   { attribute: "tissue", title: "Tissue", searchable: true },
@@ -122,6 +123,7 @@ export default function App() {
           facetFilters={[]}
           attributesToRetrieve={[
             "title",
+            "source",
             "organism",
             "top_organ",
             "tissue",
@@ -168,7 +170,10 @@ export default function App() {
           </aside>
 
           <section className="results" data-view={view}>
-            <ResultsPanel view={view} />
+            <ResultsPanel
+              view={view}
+              onOpenHits={() => setView("table")}
+            />
             {view !== "pivot" ? <Pagination /> : null}
           </section>
         </div>

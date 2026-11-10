@@ -1,0 +1,73 @@
+{
+  "source": "single_cell_portal",
+  "total_studies": 1071,
+  "n_records": 2,
+  "studies": [
+    {
+      "study_source": "SCP",
+      "accession": "SCP3898",
+      "name": "Local and circulating cytotoxic CD4 T cells are early markers of disease activity in pediatric Crohns Disease: all cells",
+      "description": "Data from the PREDICT study (https://clinicaltrials.gov/study/NCT03369353)&nbsp;For the scientific article about cytotoxic CD4 T cells. This study contains the integrated all-cell gut dataset used in Figure 4, including all cell types and all tissues present in the supplied object (1,006,165 cells). It integrates PREDICT 3-prime and 5-prime data with terminal ileum cells from Thomas et al. (2024): https://doi.org/10.1038/s41590-024-01994-8.&nbsp;Related datasets from this paper:&nbsp;Blood data: SCP3737https://singlecell.broadinstitute.org/single_cell/study/SCP3737/&nbsp;Gut CD3 and NK data: SCP3739https://singlecell.broadinstitute.org/single_cell/study/SCP3739/&nbsp;Gut CD4 T cell data: SCP3741https://singlecell.broadinstitute.org/single_cell/study/SCP3741/",
+      "public": true,
+      "detached": false,
+      "cell_count": 1006165,
+      "gene_count": 42588,
+      "study_url": "/single_cell/study/SCP3898/local-and-circulating-cytotoxic-cd4-t-cells-are-early-markers-of-disease-activity-in-pediatric-crohns-disease-all-cells",
+      "metadata": {
+        "disease": [
+          "Crohn disease",
+          "digestive system disorder",
+          "disease",
+          "normal",
+          "ulcerative colitis"
+        ],
+        "organ": [
+          "colon",
+          "duodenum",
+          "ileum"
+        ],
+        "species": [
+          "Homo sapiens"
+        ],
+        "sex": [
+          "female",
+          "male"
+        ],
+        "library_preparation_protocol": [
+          "10x 3' v2",
+          "10x 3' v3",
+          "10x 5' v1",
+          "10x 5' v2"
+        ]
+      }
+    },
+    {
+      "study_source": "SCP",
+      "accession": "SCP3885",
+      "name": "Human Choroid Plexus (Xenium Spatial Transcriptomics)",
+      "description": "",
+      "public": true,
+      "detached": false,
+      "cell_count": 441049,
+      "gene_count": 352,
+      "study_url": "/single_cell/study/SCP3885/human-choroid-plexus-xenium-spatial-transcriptomics",
+      "metadata": {
+        "disease": [
+          "normal"
+        ],
+        "organ": [
+          "choroid plexus"
+        ],
+        "species": [
+          "Homo sapiens"
+        ],
+        "sex": [
+          "male"
+        ],
+        "library_preparation_protocol": [
+          "10x Xenium"
+        ]
+      }
+    }
+  ]
+}

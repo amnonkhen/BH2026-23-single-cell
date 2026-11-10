@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Flatten WP1/fenix/experiments.json into a Typesense collection with facets."""
+"""Flatten Fenix + Single Cell Portal catalogs into one Typesense collection.
+
+Every document includes a faceted `source` field:
+  - fenix
+  - single_cell_portal
+"""
 
 from __future__ import annotations
 
@@ -17,15 +22,26 @@ import typesense
 from typesense.exceptions import ObjectAlreadyExists, ObjectNotFound
 
 ROOT = Path(__file__).resolve().parents[1]
+WP1 = ROOT.parent
 load_dotenv(ROOT / ".env")
 load_dotenv(ROOT / ".env.example", override=False)
 
 COLLECTION = os.getenv("TYPESENSE_COLLECTION", "experiments")
-DEFAULT_JSON = Path(
-    os.getenv("EXPERIMENTS_JSON", str(ROOT.parent / "fenix" / "experiments.json"))
+DEFAULT_FENIX_JSON = Path(
+    os.getenv("EXPERIMENTS_JSON", str(WP1 / "fenix" / "experiments.json"))
+)
+DEFAULT_SCP_JSON = Path(
+    os.getenv(
+        "SCP_STUDIES_JSON", str(WP1 / "single_cell_portal" / "studies.json")
+    )
 )
 
+SOURCE_FENIX = "fenix"
+SOURCE_SCP = "single_cell_portal"
+SCP_ORIGIN = "https://singlecell.broadinstitute.org"
+
 FACET_FIELDS = [
+    "source",
     "organism",
     "top_organ",
     "tissue",
@@ -104,7 +120,7 @@ def parse_published_at(value: Any) -> int:
         return 0
 
 
-def flatten_experiment(raw: dict[str, Any]) -> dict[str, Any]:
+def flatten_fenix(raw: dict[str, Any]) -> dict[str, Any]:
     tissues = raw.get("tissue") or []
     if not isinstance(tissues, list):
         tissues = [tissues]
@@ -125,50 +141,111 @@ def flatten_experiment(raw: dict[str, Any]) -> dict[str, Any]:
             h5ad_url = asset.get("url")
             break
 
+    organism = labels(raw.get("organism"))
+    top_organ = tissue_facet(tissues, "top-organ-name")
+    tissue = tissue_facet(tissues, "label")
+    assay = labels(raw.get("assay"))
+    disease = labels(raw.get("disease"))
+    cell_type = labels(raw.get("cell_type"))
+
     search_bits = [
+        SOURCE_FENIX,
         title,
         raw.get("experiment_id"),
         raw.get("study_id"),
         raw.get("citation"),
         raw.get("search_text"),
+        *organism,
+        *assay,
+        *disease,
+        *cell_type,
+        *tissue,
+        *top_organ,
     ]
-    for field in (
-        "organism",
-        "assay",
-        "disease",
-        "cell_type",
-        "development_stage",
-        "sex",
-    ):
-        search_bits.extend(labels(raw.get(field)))
-    search_bits.extend(tissue_facet(tissues, "label"))
-    search_bits.extend(tissue_facet(tissues, "top-organ-name"))
-
-    cell_count = int(raw.get("cell_count") or raw.get("primary_cell_count") or 0)
-    feature_count = int(raw.get("feature_count") or 0)
 
     return {
-        "id": doc_id,
+        "id": f"fenix::{doc_id}",
         "title": str(title),
+        "source": SOURCE_FENIX,
         "experiment_id": str(raw.get("experiment_id") or ""),
         "study_id": str(raw.get("study_id") or ""),
-        "organism": labels(raw.get("organism")),
-        "top_organ": tissue_facet(tissues, "top-organ-name"),
-        "tissue": tissue_facet(tissues, "label"),
+        "organism": organism,
+        "top_organ": top_organ,
+        "tissue": tissue,
         "tissue_type": tissue_facet(tissues, "tissue_type"),
-        "assay": labels(raw.get("assay")),
-        "disease": labels(raw.get("disease")),
+        "assay": assay,
+        "disease": disease,
         "suspension_type": labels(raw.get("suspension_type")),
         "sex": labels(raw.get("sex")),
         "development_stage": labels(raw.get("development_stage")),
         "self_reported_ethnicity": labels(raw.get("self_reported_ethnicity")),
         "study_journal": str(journal or "") or "unknown",
-        "cell_type": labels(raw.get("cell_type")),
-        "cell_count": cell_count,
-        "feature_count": feature_count,
+        "cell_type": cell_type,
+        "cell_count": int(raw.get("cell_count") or raw.get("primary_cell_count") or 0),
+        "feature_count": int(raw.get("feature_count") or 0),
         "published_at": parse_published_at(raw.get("published_at")),
         "explorer_url": str(raw.get("explorer_url") or ""),
         "h5ad_url": str(h5ad_url or ""),
+        "search_blob": " | ".join(str(bit) for bit in search_bits if bit),
+    }
+
+
+def flatten_scp(raw: dict[str, Any]) -> dict[str, Any]:
+    meta = raw.get("metadata") if isinstance(raw.get("metadata"), dict) else {}
+    accession = str(raw.get("accession") or "").strip()
+    if not accession:
+        raise ValueError("SCP study missing accession")
+
+    organism = labels(meta.get("species"))
+    organs = labels(meta.get("organ"))
+    assay = labels(meta.get("library_preparation_protocol"))
+    disease = labels(meta.get("disease"))
+    sex = labels(meta.get("sex"))
+    title = str(raw.get("name") or accession)
+    study_url = str(raw.get("study_url") or "")
+    explorer = (
+        f"{SCP_ORIGIN}{study_url}"
+        if study_url.startswith("/")
+        else study_url or f"{SCP_ORIGIN}/single_cell/study/{accession}"
+    )
+
+    search_bits = [
+        SOURCE_SCP,
+        "Single Cell Portal",
+        title,
+        accession,
+        raw.get("description"),
+        raw.get("study_source"),
+        *organism,
+        *organs,
+        *assay,
+        *disease,
+        *sex,
+    ]
+
+    return {
+        "id": f"scp::{accession}",
+        "title": title,
+        "source": SOURCE_SCP,
+        "experiment_id": accession,
+        "study_id": accession,
+        "organism": organism,
+        "top_organ": organs,  # SCP exposes organ only; reuse for top_organ facet
+        "tissue": organs,
+        "tissue_type": [],
+        "assay": assay,
+        "disease": disease,
+        "suspension_type": [],
+        "sex": sex,
+        "development_stage": [],
+        "self_reported_ethnicity": [],
+        "study_journal": "unknown",
+        "cell_type": [],
+        "cell_count": int(raw.get("cell_count") or 0),
+        "feature_count": int(raw.get("gene_count") or 0),
+        "published_at": 0,
+        "explorer_url": explorer,
+        "h5ad_url": "",
         "search_blob": " | ".join(str(bit) for bit in search_bits if bit),
     }
 
@@ -177,16 +254,17 @@ COLLECTION_SCHEMA: dict[str, Any] = {
     "name": COLLECTION,
     "fields": [
         {"name": "title", "type": "string"},
+        {"name": "source", "type": "string", "facet": True},
         {"name": "experiment_id", "type": "string", "optional": True},
         {"name": "study_id", "type": "string", "optional": True, "facet": True},
-        {"name": "organism", "type": "string[]", "facet": True},
-        {"name": "top_organ", "type": "string[]", "facet": True},
-        {"name": "tissue", "type": "string[]", "facet": True},
-        {"name": "tissue_type", "type": "string[]", "facet": True},
-        {"name": "assay", "type": "string[]", "facet": True},
-        {"name": "disease", "type": "string[]", "facet": True},
-        {"name": "suspension_type", "type": "string[]", "facet": True},
-        {"name": "sex", "type": "string[]", "facet": True},
+        {"name": "organism", "type": "string[]", "facet": True, "optional": True},
+        {"name": "top_organ", "type": "string[]", "facet": True, "optional": True},
+        {"name": "tissue", "type": "string[]", "facet": True, "optional": True},
+        {"name": "tissue_type", "type": "string[]", "facet": True, "optional": True},
+        {"name": "assay", "type": "string[]", "facet": True, "optional": True},
+        {"name": "disease", "type": "string[]", "facet": True, "optional": True},
+        {"name": "suspension_type", "type": "string[]", "facet": True, "optional": True},
+        {"name": "sex", "type": "string[]", "facet": True, "optional": True},
         {"name": "development_stage", "type": "string[]", "facet": True, "optional": True},
         {
             "name": "self_reported_ethnicity",
@@ -231,7 +309,7 @@ def wait_for_typesense(client: typesense.Client, attempts: int = 30) -> None:
             health = client.operations.is_healthy()
             if health is True or health.get("ok") is True:
                 return
-        except Exception as exc:  # noqa: BLE001 — retry until Typesense is up
+        except Exception as exc:  # noqa: BLE001
             last_error = exc
         time.sleep(1)
     raise RuntimeError(f"Typesense not healthy after {attempts}s: {last_error}")
@@ -262,16 +340,29 @@ def ensure_collection(client: typesense.Client, *, recreate: bool) -> None:
             pass
 
 
-def load_experiments(path: Path) -> list[dict[str, Any]]:
+def load_fenix(path: Path) -> list[dict[str, Any]]:
     payload = json.loads(path.read_text(encoding="utf-8"))
     if isinstance(payload, dict) and "data" in payload:
         records = payload["data"]
     elif isinstance(payload, list):
         records = payload
     else:
-        raise ValueError(f"Unexpected JSON shape in {path}")
+        raise ValueError(f"Unexpected Fenix JSON shape in {path}")
     if not isinstance(records, list):
-        raise ValueError("`data` must be a list of experiments")
+        raise ValueError("Fenix `data` must be a list")
+    return records
+
+
+def load_scp(path: Path) -> list[dict[str, Any]]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if isinstance(payload, dict) and "studies" in payload:
+        records = payload["studies"]
+    elif isinstance(payload, list):
+        records = payload
+    else:
+        raise ValueError(f"Unexpected SCP JSON shape in {path}")
+    if not isinstance(records, list):
+        raise ValueError("SCP `studies` must be a list")
     return records
 
 
@@ -280,45 +371,15 @@ def batched(items: list[dict[str, Any]], size: int) -> Iterable[list[dict[str, A
         yield items[i : i + size]
 
 
-def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "--json",
-        type=Path,
-        default=DEFAULT_JSON,
-        help="Path to experiments.json (default: WP1/fenix/experiments.json)",
-    )
-    parser.add_argument(
-        "--recreate",
-        action="store_true",
-        help="Drop and recreate the Typesense collection before indexing",
-    )
-    parser.add_argument("--batch-size", type=int, default=100)
-    args = parser.parse_args(argv)
-
-    if not args.json.is_file():
-        print(f"Missing experiments JSON: {args.json}", file=sys.stderr)
-        print(
-            "Checkout the fenix catalog branch or run WP1/fenix/download_experiments.py",
-            file=sys.stderr,
-        )
-        return 1
-
-    client = client_from_env()
-    wait_for_typesense(client)
-    ensure_collection(client, recreate=args.recreate)
-
-    raw_records = load_experiments(args.json)
-    docs = [flatten_experiment(record) for record in raw_records]
-    print(f"Indexing {len(docs)} experiments from {args.json}")
-
+def import_docs(
+    client: typesense.Client, docs: list[dict[str, Any]], batch_size: int
+) -> tuple[int, int]:
     imported = 0
     failed = 0
-    for batch in batched(docs, args.batch_size):
+    for batch in batched(docs, batch_size):
         result = client.collections[COLLECTION].documents.import_(
             batch, {"action": "upsert"}
         )
-        # typesense-python may return list[dict] or newline JSON
         if isinstance(result, str):
             rows = [json.loads(line) for line in result.splitlines() if line.strip()]
         else:
@@ -329,8 +390,67 @@ def main(argv: list[str] | None = None) -> int:
             else:
                 failed += 1
                 print(f"Import error: {row}", file=sys.stderr)
+    return imported, failed
 
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--fenix-json", type=Path, default=DEFAULT_FENIX_JSON)
+    parser.add_argument("--scp-json", type=Path, default=DEFAULT_SCP_JSON)
+    parser.add_argument(
+        "--skip-fenix", action="store_true", help="Do not index Fenix experiments"
+    )
+    parser.add_argument(
+        "--skip-scp", action="store_true", help="Do not index Single Cell Portal studies"
+    )
+    parser.add_argument(
+        "--recreate",
+        action="store_true",
+        help="Drop and recreate the Typesense collection before indexing",
+    )
+    parser.add_argument("--batch-size", type=int, default=100)
+    args = parser.parse_args(argv)
+
+    docs: list[dict[str, Any]] = []
+    counts = {SOURCE_FENIX: 0, SOURCE_SCP: 0}
+
+    if not args.skip_fenix:
+        if not args.fenix_json.is_file():
+            print(f"Missing Fenix JSON: {args.fenix_json}", file=sys.stderr)
+            return 1
+        fenix_docs = [flatten_fenix(record) for record in load_fenix(args.fenix_json)]
+        docs.extend(fenix_docs)
+        counts[SOURCE_FENIX] = len(fenix_docs)
+        print(f"Prepared {len(fenix_docs)} Fenix docs from {args.fenix_json}")
+
+    if not args.skip_scp:
+        if not args.scp_json.is_file():
+            print(f"Missing SCP JSON: {args.scp_json}", file=sys.stderr)
+            print(
+                "Run: python3 WP1/single_cell_portal/download_studies.py --summarize",
+                file=sys.stderr,
+            )
+            return 1
+        scp_docs = [flatten_scp(record) for record in load_scp(args.scp_json)]
+        docs.extend(scp_docs)
+        counts[SOURCE_SCP] = len(scp_docs)
+        print(f"Prepared {len(scp_docs)} SCP docs from {args.scp_json}")
+
+    if not docs:
+        print("Nothing to index.", file=sys.stderr)
+        return 1
+
+    client = client_from_env()
+    wait_for_typesense(client)
+    ensure_collection(client, recreate=args.recreate)
+
+    print(f"Indexing {len(docs)} documents…")
+    imported, failed = import_docs(client, docs, args.batch_size)
     print(f"Done. imported={imported} failed={failed}")
+    print(
+        "Counts by source: "
+        + ", ".join(f"{name}={counts[name]}" for name in (SOURCE_FENIX, SOURCE_SCP))
+    )
     print("Facet fields:", ", ".join(FACET_FIELDS))
     return 0 if failed == 0 else 2
 

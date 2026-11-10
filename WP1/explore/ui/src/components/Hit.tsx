@@ -1,6 +1,7 @@
 export type ExperimentHit = {
   objectID: string;
   title?: string;
+  source?: string;
   organism?: string[];
   top_organ?: string[];
   tissue?: string[];
@@ -16,6 +17,12 @@ export type ExperimentHit = {
 
 export function hitTitle(hit: ExperimentHit): string {
   return hit.title || hit.experiment_id || hit.objectID;
+}
+
+export function formatSource(source?: string): string {
+  if (source === "single_cell_portal") return "Single Cell Portal";
+  if (source === "fenix") return "Fenix";
+  return source || "unknown";
 }
 
 export function joinValues(values?: string[], limit = 3): string {
@@ -54,6 +61,7 @@ export function Hit({ hit }: { hit: ExperimentHit }) {
           )}
         </h3>
         <p className="hit-meta">
+          {hit.source ? <span className="source-pill">{formatSource(hit.source)}</span> : null}
           <span>{(hit.cell_count ?? 0).toLocaleString()} cells</span>
           {hit.feature_count ? (
             <span>{hit.feature_count.toLocaleString()} features</span>

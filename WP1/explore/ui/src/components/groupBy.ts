@@ -2,6 +2,7 @@ import type { ExperimentHit } from "./Hit";
 
 export type GroupByField =
   | "none"
+  | "source"
   | "organism"
   | "top_organ"
   | "tissue"
@@ -12,6 +13,7 @@ export type GroupByField =
 
 export const GROUP_BY_OPTIONS: { value: GroupByField; label: string }[] = [
   { value: "none", label: "None" },
+  { value: "source", label: "Source" },
   { value: "organism", label: "Organism" },
   { value: "top_organ", label: "Top organ" },
   { value: "tissue", label: "Tissue" },

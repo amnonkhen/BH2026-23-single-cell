@@ -1,8 +1,13 @@
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
-import { useCurrentRefinements, useSearchBox } from "react-instantsearch";
+import {
+  useCurrentRefinements,
+  useInstantSearch,
+  useSearchBox,
+} from "react-instantsearch";
 import { refinementsToFilterBy } from "./filters";
 
 export const PIVOT_FIELDS: { value: string; label: string }[] = [
+  { value: "source", label: "Source" },
   { value: "organism", label: "Organism" },
   { value: "top_organ", label: "Top organ" },
   { value: "tissue", label: "Tissue" },
@@ -32,6 +37,7 @@ type PivotResponse = {
 };
 
 const STORAGE_KEY = "fenix-explore-pivot-axes";
+const NONE_LABEL = "(none)";
 
 function loadAxes(): { row: string; col: string } {
   try {
@@ -67,8 +73,14 @@ function cellStyle(count: number, max: number): CSSProperties {
   };
 }
 
-export function PivotHeatmap() {
+type Props = {
+  /** Switch the main results pane to a hits view after applying cell filters. */
+  onOpenHits: () => void;
+};
+
+export function PivotHeatmap({ onOpenHits }: Props) {
   const { query } = useSearchBox();
+  const { setIndexUiState } = useInstantSearch();
   const { items: refinementItems } = useCurrentRefinements();
   const filterBy = useMemo(
     () => refinementsToFilterBy(refinementItems),
@@ -135,6 +147,29 @@ export function PivotHeatmap() {
     setAxes((prev) => ({ row: prev.col, col: prev.row }));
   };
 
+  const drillIntoCell = (rowValue: string, colValue: string, count: number) => {
+    if (!count) return;
+
+    setIndexUiState((previous) => {
+      const refinementList = { ...(previous.refinementList ?? {}) };
+
+      if (rowValue && rowValue !== NONE_LABEL) {
+        refinementList[axes.row] = [rowValue];
+      }
+      if (colValue && colValue !== NONE_LABEL) {
+        refinementList[axes.col] = [colValue];
+      }
+
+      return {
+        ...previous,
+        page: 1,
+        refinementList,
+      };
+    });
+
+    onOpenHits();
+  };
+
   return (
     <div className="pivot-panel">
       <div className="pivot-toolbar">
@@ -185,7 +220,8 @@ export function PivotHeatmap() {
         </label>
 
         <p className="group-by-hint">
-          Cells = dataset counts. Uses the current search query and facet filters.
+          Cells = dataset counts. Click a cell to filter InstantSearch and open
+          the hits view.
         </p>
       </div>
 
@@ -233,11 +269,27 @@ export function PivotHeatmap() {
                     </th>
                     {data.cols.map((col, colIndex) => {
                       const count = data.matrix[rowIndex]?.[colIndex] ?? 0;
+                      const clickable = count > 0;
                       return (
                         <td
                           key={`${row}-${col}`}
                           style={cellStyle(count, data.max_cell)}
-                          title={`${row} × ${col}: ${count}`}
+                          title={
+                            clickable
+                              ? `${row} × ${col}: ${count} — click to show datasets`
+                              : `${row} × ${col}: 0`
+                          }
+                          className={clickable ? "pivot-cell is-clickable" : "pivot-cell"}
+                          role={clickable ? "button" : undefined}
+                          tabIndex={clickable ? 0 : undefined}
+                          onClick={() => drillIntoCell(row, col, count)}
+                          onKeyDown={(event) => {
+                            if (!clickable) return;
+                            if (event.key === "Enter" || event.key === " ") {
+                              event.preventDefault();
+                              drillIntoCell(row, col, count);
+                            }
+                          }}
                         >
                           {count || "·"}
                         </td>

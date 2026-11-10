@@ -21,6 +21,7 @@ function loadStoredGroupBy(): GroupByField {
 
 type Props = {
   view: ResultsView;
+  onOpenHits: () => void;
 };
 
 function HitRow({ hit }: { hit: ExperimentHit }) {
@@ -39,6 +40,7 @@ function HitRow({ hit }: { hit: ExperimentHit }) {
           <span className="row-sub">{hit.study_journal}</span>
         ) : null}
       </td>
+      <td>{hit.source || "—"}</td>
       <td>{joinValues(hit.organism, 2)}</td>
       <td>{joinValues(hit.top_organ, 2)}</td>
       <td>{joinValues(hit.assay, 2)}</td>
@@ -48,7 +50,7 @@ function HitRow({ hit }: { hit: ExperimentHit }) {
   );
 }
 
-export function ResultsPanel({ view }: Props) {
+export function ResultsPanel({ view, onOpenHits }: Props) {
   const { items } = useHits<ExperimentHit>();
   const [groupBy, setGroupBy] = useState<GroupByField>(() => loadStoredGroupBy());
 
@@ -61,7 +63,7 @@ export function ResultsPanel({ view }: Props) {
   }, [groupBy]);
 
   if (view === "pivot") {
-    return <PivotHeatmap />;
+    return <PivotHeatmap onOpenHits={onOpenHits} />;
   }
 
   if (!items.length) {
@@ -101,6 +103,7 @@ export function ResultsPanel({ view }: Props) {
             <thead>
               <tr>
                 <th scope="col">Title</th>
+                <th scope="col">Source</th>
                 <th scope="col">Organism</th>
                 <th scope="col">Top organ</th>
                 <th scope="col">Assay</th>
@@ -153,7 +156,7 @@ function GroupSection({
     <>
       {showHeader ? (
         <tr className="group-header-row">
-          <th scope="colgroup" colSpan={6}>
+          <th scope="colgroup" colSpan={7}>
             <span className="group-header-label">{label}</span>
             <span className="group-header-count">
               {count} {count === 1 ? "experiment" : "experiments"}

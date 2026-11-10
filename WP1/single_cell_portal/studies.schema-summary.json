@@ -1,0 +1,404 @@
+{
+  "total_studies": 1071,
+  "n_records": 1071,
+  "top_level_keys": [
+    "api_url",
+    "matching_accessions",
+    "n_records",
+    "source",
+    "studies",
+    "total_pages",
+    "total_studies"
+  ],
+  "record_fields": [
+    "accession",
+    "cell_count",
+    "description",
+    "detached",
+    "gene_count",
+    "metadata",
+    "name",
+    "public",
+    "study_source",
+    "study_url"
+  ],
+  "metadata_fields": [
+    "disease",
+    "library_preparation_protocol",
+    "organ",
+    "sex",
+    "species"
+  ],
+  "facets": {
+    "metadata.species": {
+      "unique": 43,
+      "top": [
+        [
+          "Mus musculus",
+          220
+        ],
+        [
+          "Homo sapiens",
+          200
+        ],
+        [
+          "Mus musculus musculus",
+          19
+        ],
+        [
+          "Sus scrofa",
+          12
+        ],
+        [
+          "Rattus norvegicus",
+          11
+        ],
+        [
+          "Macaca fascicularis",
+          10
+        ],
+        [
+          "Danio rerio",
+          9
+        ],
+        [
+          "Gallus gallus",
+          5
+        ],
+        [
+          "Tupaia belangeri",
+          4
+        ],
+        [
+          "Mus Musculus",
+          4
+        ],
+        [
+          "Macaca mulatta",
+          4
+        ],
+        [
+          "Callithrix jacchus",
+          3
+        ],
+        [
+          "human",
+          2
+        ],
+        [
+          "Bos taurus",
+          2
+        ],
+        [
+          "Microcebus murinus",
+          2
+        ],
+        [
+          "Ovis aries",
+          2
+        ],
+        [
+          "homo sapiens",
+          2
+        ],
+        [
+          "root",
+          2
+        ],
+        [
+          "Drosophila melanogaster",
+          2
+        ],
+        [
+          "drosophila melanogaster",
+          2
+        ]
+      ]
+    },
+    "metadata.organ": {
+      "unique": 219,
+      "top": [
+        [
+          "brain",
+          106
+        ],
+        [
+          "liver",
+          37
+        ],
+        [
+          "blood",
+          35
+        ],
+        [
+          "lung",
+          30
+        ],
+        [
+          "retina",
+          28
+        ],
+        [
+          "colon",
+          18
+        ],
+        [
+          "ileum",
+          16
+        ],
+        [
+          "lymph node",
+          15
+        ],
+        [
+          "adipose tissue",
+          15
+        ],
+        [
+          "small intestine",
+          12
+        ],
+        [
+          "duodenum",
+          10
+        ],
+        [
+          "kidney",
+          10
+        ],
+        [
+          "ovary",
+          9
+        ],
+        [
+          "bone marrow",
+          9
+        ],
+        [
+          "breast",
+          8
+        ],
+        [
+          "eye",
+          8
+        ],
+        [
+          "skin of body",
+          7
+        ],
+        [
+          "intestine",
+          7
+        ],
+        [
+          "pancreas",
+          7
+        ],
+        [
+          "choroid plexus",
+          6
+        ]
+      ]
+    },
+    "metadata.disease": {
+      "unique": 180,
+      "top": [
+        [
+          "normal",
+          389
+        ],
+        [
+          "ulcerative colitis",
+          9
+        ],
+        [
+          "tuberculosis",
+          9
+        ],
+        [
+          "disease or disorder",
+          8
+        ],
+        [
+          "Crohn disease",
+          7
+        ],
+        [
+          "glioblastoma",
+          7
+        ],
+        [
+          "obesity disorder",
+          7
+        ],
+        [
+          "metabolic dysfunction-associated steatotic liver disease",
+          7
+        ],
+        [
+          "influenza",
+          7
+        ],
+        [
+          "cancer",
+          7
+        ],
+        [
+          "ovarian carcinoma",
+          6
+        ],
+        [
+          "digestive system disorder",
+          5
+        ],
+        [
+          "melanoma",
+          5
+        ],
+        [
+          "Alzheimer disease",
+          5
+        ],
+        [
+          "COVID-19",
+          5
+        ],
+        [
+          "HIV infectious disease",
+          5
+        ],
+        [
+          "disease",
+          4
+        ],
+        [
+          "clear cell renal carcinoma",
+          4
+        ],
+        [
+          "breast cancer",
+          3
+        ],
+        [
+          "Crohn's disease",
+          3
+        ]
+      ]
+    },
+    "metadata.sex": {
+      "unique": 4,
+      "top": [
+        [
+          "male",
+          297
+        ],
+        [
+          "female",
+          218
+        ],
+        [
+          "unknown",
+          140
+        ],
+        [
+          "mixed",
+          37
+        ]
+      ]
+    },
+    "metadata.library_preparation_protocol": {
+      "unique": 68,
+      "top": [
+        [
+          "10x 3' v3",
+          143
+        ],
+        [
+          "10X 3' v2 sequencing",
+          61
+        ],
+        [
+          "10x 3' v2",
+          55
+        ],
+        [
+          "Seq-Well",
+          24
+        ],
+        [
+          "10x 5' v2",
+          20
+        ],
+        [
+          "10x Xenium",
+          20
+        ],
+        [
+          "10x 3' v3 sequencing",
+          18
+        ],
+        [
+          "10x 3' transcription profiling",
+          18
+        ],
+        [
+          "10x multiome",
+          13
+        ],
+        [
+          "Seq-Well S3",
+          13
+        ],
+        [
+          "10X 3' v2",
+          13
+        ],
+        [
+          "10x 3' v1",
+          12
+        ],
+        [
+          "10X 3' v3",
+          11
+        ],
+        [
+          "Smart-seq2",
+          11
+        ],
+        [
+          "10x 3' v2 sequencing",
+          11
+        ],
+        [
+          "10x 5' v1",
+          10
+        ],
+        [
+          "Drop-seq",
+          10
+        ],
+        [
+          "Visium Spatial Gene Expression",
+          8
+        ],
+        [
+          "Slide-seq",
+          7
+        ],
+        [
+          "spatial transcriptomics",
+          6
+        ]
+      ]
+    },
+    "public": {
+      "unique": 1,
+      "top": [
+        [
+          "True",
+          1071
+        ]
+      ]
+    }
+  }
+}

@@ -40,6 +40,7 @@ CORS_ORIGINS = [
 ]
 
 FACET_FIELDS = [
+    "source",
     "organism",
     "top_organ",
     "tissue",

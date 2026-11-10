@@ -611,6 +611,31 @@ a {
   position: relative;
 }
 
+.pivot-cell.is-clickable {
+  cursor: pointer;
+}
+
+.pivot-cell.is-clickable:hover {
+  transform: scale(1.04);
+  box-shadow: inset 0 0 0 1px rgba(15, 106, 92, 0.35);
+}
+
+.pivot-cell.is-clickable:focus-visible {
+  outline: 2px solid rgba(15, 106, 92, 0.55);
+  outline-offset: -2px;
+}
+
+.source-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+  background: #e7eef5;
+  color: #1f3b52;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
 .hit {
   border: 1px solid var(--line);
   border-radius: var(--radius);
