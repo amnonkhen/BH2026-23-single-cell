@@ -96,13 +96,9 @@ export function ResultsPanel({ view, onOpenHits }: Props) {
   const focusGroup = (key: string, label: string) => {
     setActiveChip(key);
 
-    const el = document.getElementById(groupDomId(key));
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-
     if (groupBy === "none" || label === NONE_LABEL) return;
 
+    // Filter only — do not scroll/jump the hits list.
     setIndexUiState((previous) => ({
       ...previous,
       page: 1,
@@ -143,7 +139,7 @@ export function ResultsPanel({ view, onOpenHits }: Props) {
           </label>
           <p className="group-by-hint">
             {grouped
-              ? "Top groups by count on this page — click a chip to scroll and filter InstantSearch."
+              ? "Top groups by count on this page — click a chip to filter InstantSearch."
               : "Choose an attribute to nest rows under section headers."}
           </p>
 
@@ -157,7 +153,7 @@ export function ResultsPanel({ view, onOpenHits }: Props) {
                     type="button"
                     role="listitem"
                     className={selected ? "group-chip is-active" : "group-chip"}
-                    title={`${group.label} — ${group.hits.length} on this page; click to scroll & filter`}
+                    title={`${group.label} — ${group.hits.length} on this page; click to filter`}
                     onClick={() => focusGroup(group.key, group.label)}
                   >
                     <span className="group-chip-label">{group.label}</span>
