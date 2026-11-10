@@ -131,6 +131,53 @@ a {
   font-size: 0.92rem;
 }
 
+.toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  align-items: center;
+}
+
+.view-toggle {
+  display: inline-flex;
+  padding: 0.2rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  gap: 0.15rem;
+}
+
+.view-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 500;
+  padding: 0.38rem 0.75rem;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.view-toggle-btn:hover {
+  color: var(--ink);
+}
+
+.view-toggle-btn.is-active {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(15, 106, 92, 0.22);
+}
+
+.view-toggle-btn:focus-visible {
+  outline: 2px solid rgba(15, 106, 92, 0.4);
+  outline-offset: 2px;
+}
+
 .ais-ClearRefinements-button {
   border: 1px solid var(--line);
   background: #fff;
@@ -241,14 +288,104 @@ a {
   display: grid;
   gap: 1rem;
   animation: rise 780ms ease-out both;
+  min-width: 0;
 }
 
-.ais-Hits-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.results-card-grid {
   display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.85rem;
+  animation: crossfade 220ms ease both;
+}
+
+.empty-results {
+  margin: 0;
+  padding: 1.25rem 1rem;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.55);
+  text-align: center;
+}
+
+.results-table-wrap {
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: var(--shadow);
+  animation: crossfade 220ms ease both;
+}
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+  font-size: 0.92rem;
+}
+
+.results-table th,
+.results-table td {
+  padding: 0.72rem 0.85rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--line);
+}
+
+.results-table th {
+  position: sticky;
+  top: 0;
+  background: #f7faf8;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  z-index: 1;
+}
+
+.results-table tbody tr {
+  transition: background 140ms ease;
+}
+
+.results-table tbody tr:hover {
+  background: rgba(215, 238, 232, 0.45);
+}
+
+.results-table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.results-table .title-cell {
+  max-width: 18rem;
+}
+
+.results-table .title-cell a {
+  font-weight: 600;
+}
+
+.results-table .row-sub {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.empty-cell {
+  color: var(--muted);
+}
+
+@keyframes crossfade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .hit {
@@ -373,6 +510,12 @@ a {
   }
 }
 
+@media (max-width: 980px) {
+  .results-card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 860px) {
   .layout {
     grid-template-columns: 1fr;
@@ -381,5 +524,14 @@ a {
   .hit-facets > div {
     grid-template-columns: 1fr;
     gap: 0.2rem;
+  }
+
+  .toolbar-meta {
+    align-items: stretch;
+  }
+
+  .toolbar-actions {
+    width: 100%;
+    justify-content: space-between;
   }
 }

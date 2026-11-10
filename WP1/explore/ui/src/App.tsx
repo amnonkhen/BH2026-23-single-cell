@@ -3,14 +3,14 @@ import {
   ClearRefinements,
   Configure,
   CurrentRefinements,
-  Hits,
   InstantSearch,
   Pagination,
   RefinementList,
   SearchBox,
   Stats,
 } from "react-instantsearch";
-import { Hit } from "./components/Hit";
+import { ResultsPanel } from "./components/ResultsPanel";
+import { ViewToggle, type ResultsView } from "./components/ViewToggle";
 import { createSearchClient, loadSearchConfig, type SearchConfig } from "./typesense";
 
 const FACET_PANELS: { attribute: string; title: string; searchable?: boolean }[] = [
@@ -25,6 +25,18 @@ const FACET_PANELS: { attribute: string; title: string; searchable?: boolean }[]
   { attribute: "study_journal", title: "Journal", searchable: true },
 ];
 
+const VIEW_STORAGE_KEY = "fenix-explore-results-view";
+
+function loadStoredView(): ResultsView {
+  try {
+    const value = localStorage.getItem(VIEW_STORAGE_KEY);
+    if (value === "cards" || value === "table") return value;
+  } catch {
+    // ignore private-mode / SSR storage failures
+  }
+  return "cards";
+}
+
 type ReadyState = {
   config: SearchConfig;
   searchClient: ReturnType<typeof createSearchClient>["searchClient"];
@@ -34,6 +46,7 @@ type ReadyState = {
 export default function App() {
   const [ready, setReady] = useState<ReadyState | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [view, setView] = useState<ResultsView>(() => loadStoredView());
 
   useEffect(() => {
     let cancelled = false;
@@ -55,6 +68,14 @@ export default function App() {
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(VIEW_STORAGE_KEY, view);
+    } catch {
+      // ignore
+    }
+  }, [view]);
 
   if (error) {
     return (
@@ -122,7 +143,10 @@ export default function App() {
           />
           <div className="toolbar-meta">
             <Stats />
-            <ClearRefinements translations={{ resetButtonText: "Clear filters" }} />
+            <div className="toolbar-actions">
+              <ViewToggle value={view} onChange={setView} />
+              <ClearRefinements translations={{ resetButtonText: "Clear filters" }} />
+            </div>
           </div>
           <CurrentRefinements />
         </section>
@@ -143,8 +167,8 @@ export default function App() {
             ))}
           </aside>
 
-          <section className="results">
-            <Hits hitComponent={Hit} />
+          <section className="results" data-view={view}>
+            <ResultsPanel view={view} />
             <Pagination />
           </section>
         </div>

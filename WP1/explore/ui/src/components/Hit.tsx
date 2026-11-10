@@ -14,8 +14,19 @@ export type ExperimentHit = {
   study_journal?: string;
 };
 
+export function hitTitle(hit: ExperimentHit): string {
+  return hit.title || hit.experiment_id || hit.objectID;
+}
+
+export function joinValues(values?: string[], limit = 3): string {
+  if (!values?.length) return "—";
+  const shown = values.slice(0, limit);
+  const rest = values.length - shown.length;
+  return rest > 0 ? `${shown.join(", ")} +${rest}` : shown.join(", ");
+}
+
 function chips(values?: string[], limit = 4) {
-  if (!values?.length) return null;
+  if (!values?.length) return <span className="empty-cell">—</span>;
   const shown = values.slice(0, limit);
   const rest = values.length - shown.length;
   return (
@@ -29,7 +40,7 @@ function chips(values?: string[], limit = 4) {
 }
 
 export function Hit({ hit }: { hit: ExperimentHit }) {
-  const title = hit.title || hit.experiment_id || hit.objectID;
+  const title = hitTitle(hit);
   return (
     <article className="hit">
       <header className="hit-header">
