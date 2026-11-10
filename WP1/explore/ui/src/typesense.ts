@@ -20,17 +20,41 @@ export async function loadSearchConfig(): Promise<SearchConfig> {
   return response.json();
 }
 
+/**
+ * Prefer same-origin `/typesense` proxy (Vite) so Try Live / remote browsers
+ * do not need direct access to Typesense :8108.
+ */
+function browserTypesenseNode(): {
+  host: string;
+  port: number;
+  protocol: string;
+  path: string;
+} {
+  const { protocol, hostname, port } = window.location;
+  const isHttps = protocol === "https:";
+  return {
+    host: hostname || "localhost",
+    port: Number(port || (isHttps ? 443 : 80)),
+    protocol: isHttps ? "https" : "http",
+    path: "/typesense",
+  };
+}
+
 export function createSearchClient(config: SearchConfig) {
-  const adapter = new TypesenseInstantSearchAdapter({
-    server: {
-      apiKey: config.api_key,
-      nodes: [
-        {
+  const node =
+    typeof window !== "undefined"
+      ? browserTypesenseNode()
+      : {
           host: config.host,
           port: config.port,
           protocol: config.protocol,
-        },
-      ],
+          path: "",
+        };
+
+  const adapter = new TypesenseInstantSearchAdapter({
+    server: {
+      apiKey: config.api_key,
+      nodes: [node],
       cacheSearchResultsForSeconds: 30,
     },
     additionalSearchParameters: {

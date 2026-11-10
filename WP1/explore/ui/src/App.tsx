@@ -3,26 +3,16 @@ import {
   ClearRefinements,
   Configure,
   CurrentRefinements,
-  HierarchicalMenu,
   InstantSearch,
   Pagination,
-  RefinementList,
   SearchBox,
   Stats,
 } from "react-instantsearch";
+import { FacetRefinementList } from "./components/FacetRefinementList";
 import { ResultsPanel } from "./components/ResultsPanel";
+import { TissueHierarchyMenu } from "./components/TissueHierarchyMenu";
 import { ViewToggle, type ResultsView } from "./components/ViewToggle";
 import { createSearchClient, loadSearchConfig, type SearchConfig } from "./typesense";
-
-/** InstantSearch HierarchicalMenu attributes (Typesense field.lvlN). */
-const TISSUE_HIERARCHY_ATTRIBUTES = [
-  "tissue_hierarchy.lvl0",
-  "tissue_hierarchy.lvl1",
-  "tissue_hierarchy.lvl2",
-  "tissue_hierarchy.lvl3",
-  "tissue_hierarchy.lvl4",
-  "tissue_hierarchy.lvl5",
-];
 
 const FACET_PANELS: {
   attribute: string;
@@ -144,7 +134,6 @@ export default function App() {
       >
         <Configure
           hitsPerPage={12}
-          facetFilters={[]}
           attributesToRetrieve={[
             "title",
             "source",
@@ -186,12 +175,7 @@ export default function App() {
               <p className="facet-hint">
                 UBERON paths from OLS (Fenix IDs; SCP labels best-effort).
               </p>
-              <HierarchicalMenu
-                attributes={TISSUE_HIERARCHY_ATTRIBUTES}
-                separator=" > "
-                showMore
-                limit={10}
-              />
+              <TissueHierarchyMenu />
             </details>
             {FACET_PANELS.map((panel) => (
               <details
@@ -199,10 +183,9 @@ export default function App() {
                 open={panel.open !== false}
               >
                 <summary>{panel.title}</summary>
-                <RefinementList
+                <FacetRefinementList
                   attribute={panel.attribute}
                   searchable={panel.searchable}
-                  showMore
                   limit={8}
                   searchablePlaceholder={`Filter ${panel.title.toLowerCase()}…`}
                 />

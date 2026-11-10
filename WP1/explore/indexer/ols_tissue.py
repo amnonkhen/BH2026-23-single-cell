@@ -23,6 +23,8 @@ HIER_SEP = " > "
 MAX_LEVELS = 6
 
 # Drop ultra-generic upper ontology / UBERON roots from browse paths.
+# Keep this aggressive so HierarchicalMenu lvl0 shows real organs/tissues,
+# not abstract parents like "Organ" / "Organ Part".
 SKIP_LABELS = {
     "anatomical entity",
     "material anatomical entity",
@@ -34,7 +36,32 @@ SKIP_LABELS = {
     "independent continuant",
     "occurrent",
     "specifically dependent continuant",
+    "organ",
+    "organ part",
+    "tissue",
+    "multi-tissue structure",
+    "gross anatomical part",
+    "anatomical system",
+    "immaterial anatomical entity",
+    "anatomical cluster",
+    "anatomical group",
+    "disconnected anatomical group",
+    "organism subdivision",
+    "structure with developmental contribution from neural crest",
 }
+
+
+def trim_generic_path(path: list[str]) -> list[str]:
+    """Strip leading generic UBERON parents from a cached/fetched path."""
+    cleaned = [str(x).strip() for x in path if str(x).strip()]
+    while cleaned and cleaned[0].casefold() in SKIP_LABELS:
+        cleaned = cleaned[1:]
+    # Also drop any remaining generic-only labels that aren't useful leaves.
+    return [
+        label
+        for label in cleaned
+        if label.casefold() not in SKIP_LABELS
+    ]
 
 
 def _double_encode_iri(iri: str) -> str:
@@ -218,6 +245,8 @@ def resolve_path(
             "label": label,
         }
 
+    path = trim_generic_path(path)
+
     if label:
         by_label[str(label).strip().casefold()] = {
             "label": label,
@@ -242,12 +271,14 @@ def paths_to_hierarchy_fields(
 
     for path in paths:
         cleaned: list[str] = []
-        for raw in path:
+        for raw in trim_generic_path(path):
             label = str(raw).strip()
             if not label:
                 continue
             if canonicalize:
                 label = canonicalize(label)
+            if label.casefold() in SKIP_LABELS:
+                continue
             if cleaned and cleaned[-1].casefold() == label.casefold():
                 continue
             cleaned.append(label)

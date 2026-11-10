@@ -313,6 +313,27 @@ a {
   font: inherit;
 }
 
+/* Stock InstantSearch keeps a disabled Show more; we hide it when cardinality fits. */
+.ais-RefinementList-showMore--disabled,
+.ais-HierarchicalMenu-showMore--disabled {
+  display: none;
+}
+
+.facet-empty {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.ais-SearchBox-input {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.4rem 0.55rem;
+  font: inherit;
+  background: #fff;
+}
+
 .results {
   display: grid;
   gap: 1rem;
