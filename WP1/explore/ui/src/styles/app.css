@@ -284,6 +284,16 @@ a {
   font: inherit;
 }
 
+.facet-no-results {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.ais-RefinementList-item--selected .ais-RefinementList-labelText {
+  font-weight: 600;
+}
+
 .results {
   display: grid;
   gap: 1rem;

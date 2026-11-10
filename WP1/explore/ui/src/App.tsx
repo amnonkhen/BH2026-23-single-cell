@@ -5,10 +5,10 @@ import {
   CurrentRefinements,
   InstantSearch,
   Pagination,
-  RefinementList,
   SearchBox,
   Stats,
 } from "react-instantsearch";
+import { FacetRefinementList } from "./components/FacetRefinementList";
 import { ResultsPanel } from "./components/ResultsPanel";
 import { ViewToggle, type ResultsView } from "./components/ViewToggle";
 import { createSearchClient, loadSearchConfig, type SearchConfig } from "./typesense";
@@ -175,7 +175,7 @@ export default function App() {
                 open={panel.open !== false}
               >
                 <summary>{panel.title}</summary>
-                <RefinementList
+                <FacetRefinementList
                   attribute={panel.attribute}
                   searchable={panel.searchable}
                   showMore
