@@ -71,6 +71,8 @@ Every document has a faceted **`source`** (`fenix` or `single_cell_portal`) plus
 
 Document ids are namespaced (`fenix::…`, `scp::SCP####`) to avoid collisions.
 
+Facet string values are **case-normalized** at index time (`canonicalize_facet_value`): case-only variants merge (e.g. `brain`/`Brain` → `Brain`, `10X 3' v2`/`10x 3' v2` → `10x 3' v2`).
+
 Re-index after refreshing either snapshot:
 
 ```bash

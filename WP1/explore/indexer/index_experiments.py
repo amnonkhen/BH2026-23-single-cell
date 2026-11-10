@@ -56,19 +56,97 @@ FACET_FIELDS = [
     "cell_type",
 ]
 
+# Acronyms / tokens kept upper (or special-cased) inside Title Case facets.
+_UPPER_TOKENS = {
+    "tcr",
+    "bcr",
+    "atac",
+    "rna",
+    "dna",
+    "scrna",
+    "snrna",
+    "hto",
+    "adt",
+    "citeseq",
+    "multiome",
+}
+_SPECIAL_TOKENS = {
+    "mrna": "mRNA",
+    "cdna": "cDNA",
+    "scrna-seq": "scRNA-seq",
+    "snrna-seq": "snRNA-seq",
+    "dronc-seq": "DroNc-seq",
+    "drop-seq": "Drop-seq",
+}
+
+
+def canonicalize_facet_value(text: str) -> str:
+    """Merge case-only variants into a stable Title Case-ish canonical form.
+
+    Examples:
+      'homo sapiens' / 'Homo Sapiens' → 'Homo Sapiens'
+      '10X 3' v2' / '10x 3' v2' → \"10x 3' v2\"
+      'brain' / 'Brain' → 'Brain'
+    """
+    raw = " ".join(str(text).strip().split())
+    if not raw:
+        return raw
+
+    parts: list[str] = []
+    for token in raw.split(" "):
+        if not token:
+            continue
+        lower = token.lower()
+        special = _SPECIAL_TOKENS.get(lower)
+        if special:
+            parts.append(special)
+            continue
+        # 10X / 10x brand → always 10x
+        if lower == "10x":
+            parts.append("10x")
+            continue
+        if lower.startswith("10x") and len(token) > 3:
+            parts.append("10x" + canonicalize_facet_value(token[3:]))
+            continue
+        # version tokens: v2, v3, v3.1
+        if lower.startswith("v") and len(lower) > 1 and lower[1].isdigit():
+            parts.append(lower)
+            continue
+        # hyphenated compounds: title-case each piece
+        if "-" in token:
+            pieces = []
+            for piece in lower.split("-"):
+                if not piece:
+                    pieces.append(piece)
+                elif piece in _UPPER_TOKENS:
+                    pieces.append(piece.upper())
+                elif piece in _SPECIAL_TOKENS:
+                    pieces.append(_SPECIAL_TOKENS[piece])
+                else:
+                    pieces.append(piece[:1].upper() + piece[1:])
+            parts.append("-".join(pieces))
+            continue
+        if lower in _UPPER_TOKENS:
+            parts.append(lower.upper())
+            continue
+        # Default Title Case word
+        parts.append(lower[:1].upper() + lower[1:])
+    return " ".join(parts)
+
 
 def labels(value: Any, extra_keys: Iterable[str] = ()) -> list[str]:
     """Extract unique label strings from ontology objects, strings, or lists."""
     out: list[str] = []
-    seen: set[str] = set()
+    seen: set[str] = set()  # casefold keys after canonicalize
 
     def add(item: str | None) -> None:
         if not item:
             return
-        text = str(item).strip()
-        if not text or text in seen:
+        text = canonicalize_facet_value(str(item))
+        key = text.casefold()
+        if not text or key in seen:
             return
-        seen.add(text)
+        seen.add(key)
         out.append(text)
 
     if value is None:
@@ -99,9 +177,10 @@ def tissue_facet(records: list[dict[str, Any]], key: str) -> list[str]:
         value = item.get(key)
         if value is None:
             continue
-        text = str(value).strip()
-        if text and text not in seen:
-            seen.add(text)
+        text = canonicalize_facet_value(str(value))
+        fold = text.casefold()
+        if text and fold not in seen:
+            seen.add(fold)
             out.append(text)
     return out
 
@@ -179,7 +258,7 @@ def flatten_fenix(raw: dict[str, Any]) -> dict[str, Any]:
         "sex": labels(raw.get("sex")),
         "development_stage": labels(raw.get("development_stage")),
         "self_reported_ethnicity": labels(raw.get("self_reported_ethnicity")),
-        "study_journal": str(journal or "") or "unknown",
+        "study_journal": canonicalize_facet_value(str(journal)) if journal else "unknown",
         "cell_type": cell_type,
         "cell_count": int(raw.get("cell_count") or raw.get("primary_cell_count") or 0),
         "feature_count": int(raw.get("feature_count") or 0),
