@@ -24,6 +24,15 @@ const TISSUE_HIERARCHY_ATTRIBUTES = [
   "tissue_hierarchy.lvl5",
 ];
 
+const CELL_TYPE_HIERARCHY_ATTRIBUTES = [
+  "cell_type_hierarchy.lvl0",
+  "cell_type_hierarchy.lvl1",
+  "cell_type_hierarchy.lvl2",
+  "cell_type_hierarchy.lvl3",
+  "cell_type_hierarchy.lvl4",
+  "cell_type_hierarchy.lvl5",
+];
+
 const FACET_PANELS: {
   attribute: string;
   title: string;
@@ -46,9 +55,10 @@ const FACET_PANELS: {
   { attribute: "tissue_type", title: "Tissue type", open: false, showMore: false },
   { attribute: "assay", title: "Assay", searchable: true, showMore: true },
   { attribute: "disease", title: "Disease", searchable: true, showMore: true },
+  // Flat cell type kept as a searchable fallback beside the CL hierarchy menu.
   {
     attribute: "cell_type",
-    title: "Cell type",
+    title: "Cell type (flat)",
     searchable: true,
     open: false,
     showMore: true,
@@ -208,6 +218,20 @@ export default function App() {
               </p>
               <HierarchicalMenu
                 attributes={TISSUE_HIERARCHY_ATTRIBUTES}
+                separator=" > "
+                showMore={true}
+                limit={12}
+                showMoreLimit={100}
+                sortBy={["count:desc"]}
+              />
+            </details>
+            <details open>
+              <summary>Cell type hierarchy</summary>
+              <p className="facet-hint">
+                Cell Ontology (CL) paths from OLS (Fenix IDs; SCP has no cell_type).
+              </p>
+              <HierarchicalMenu
+                attributes={CELL_TYPE_HIERARCHY_ATTRIBUTES}
                 separator=" > "
                 showMore={true}
                 limit={12}

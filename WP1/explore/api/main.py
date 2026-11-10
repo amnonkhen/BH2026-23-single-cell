@@ -59,6 +59,12 @@ FACET_FIELDS = [
     "self_reported_ethnicity",
     "study_journal",
     "cell_type",
+    "cell_type_hierarchy.lvl0",
+    "cell_type_hierarchy.lvl1",
+    "cell_type_hierarchy.lvl2",
+    "cell_type_hierarchy.lvl3",
+    "cell_type_hierarchy.lvl4",
+    "cell_type_hierarchy.lvl5",
 ]
 
 app = FastAPI(

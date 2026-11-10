@@ -65,6 +65,7 @@ Every document has a faceted **`source`** (`fenix` or `single_cell_portal`) plus
 | `assay` | `assay[].label` | `metadata.library_preparation_protocol` |
 | `disease` | `disease[].label` | `metadata.disease` |
 | `cell_type` | `cell_type[].label` | *(not in SCP search API — empty)* |
+| `cell_type_hierarchy.lvl0…lvl5` | OLS CL path from `cell_type[].ontology_term_id` | *(not in SCP search API — empty)* |
 | `development_stage` | `development_stage[].label` | *(not in SCP search API — empty)* |
 | `sex` | `sex[].label` | `metadata.sex` |
 | `cell_count` | `cell_count` | `cell_count` |
@@ -75,28 +76,37 @@ Document ids are namespaced (`fenix::…`, `scp::SCP####`) to avoid collisions.
 
 Facet string values are **case-normalized** at index time (`canonicalize_facet_value`): case-only variants merge (e.g. `brain`/`Brain` → `Brain`, `10X 3' v2`/`10x 3' v2` → `10x 3' v2`).
 
-### Tissue hierarchy (OLS)
+### Tissue & cell-type hierarchy (OLS)
 
-At index time the indexer resolves tissues via [EBI OLS4](https://www.ebi.ac.uk/ols4/) and writes Algolia-style `tissue_hierarchy.lvlN` fields (`"Organ > Substructure > …"`). The UI uses InstantSearch **HierarchicalMenu** for browse, and keeps a collapsed flat **Tissue** facet for search/keyword use.
+At index time the indexer resolves tissues (UBERON) and cell types (CL) via [EBI OLS4](https://www.ebi.ac.uk/ols4/) and writes Algolia-style `*.lvlN` fields (`"Parent > Child > …"`). The UI uses InstantSearch **HierarchicalMenu** for browse, and keeps collapsed flat **Tissue** / **Cell type** facets for search/keyword use.
 
-| Source | Resolution |
-|--------|------------|
-| **Fenix** (primary) | `tissue[].ontology_term_id` (and `top-organ-uberon`) → OLS UBERON jstree path |
-| **SCP** (best-effort) | exact OLS label search on `metadata.organ`; falls back to a single-level path |
+| Field prefix | Source | Resolution |
+|--------------|--------|------------|
+| `tissue_hierarchy` | **Fenix** (primary) | `tissue[].ontology_term_id` (and `top-organ-uberon`) → OLS UBERON jstree |
+| `tissue_hierarchy` | **SCP** (best-effort) | exact OLS label search on `metadata.organ`; single-level fallback |
+| `cell_type_hierarchy` | **Fenix** (primary) | `cell_type[].ontology_term_id` → OLS Cell Ontology (CL) jstree |
+| `cell_type_hierarchy` | **SCP** | *(absent in SCP search API — empty)* |
 
-Responses are cached on disk at `indexer/ols_cache/uberon_paths.json` so re-indexes do not hammer OLS.
+Responses are cached on disk:
 
-**Refresh the OLS cache** (e.g. after new tissues appear in the catalogs, or to pick up ontology updates):
+- `indexer/ols_cache/uberon_paths.json` (tissue / UBERON)
+- `indexer/ols_cache/cl_paths.json` (cell type / CL)
+
+**Refresh the OLS caches** (e.g. after new tissues/cell types appear, or to pick up ontology updates):
 
 ```bash
 cd WP1/explore
 source .venv/bin/activate
 
-# Standalone warm (Fenix curies; add --scp for SCP organ labels)
+# Tissue (Fenix curies; add --scp for SCP organ labels)
 python indexer/enrich_tissue_hierarchy.py --scp
+
+# Cell type (Fenix CL curies)
+python indexer/enrich_cell_type_hierarchy.py
 
 # Force re-fetch from OLS (ignore existing cache entries)
 python indexer/enrich_tissue_hierarchy.py --refresh --scp
+python indexer/enrich_cell_type_hierarchy.py --refresh
 
 # Or refresh while indexing
 python indexer/index_experiments.py --recreate --refresh-ols
@@ -118,6 +128,7 @@ Re-index after refreshing either catalog snapshot as well (same command).
 - **Cards / Table** — InstantSearch hits; Table has **Group by** section headers
 - **Pivot** — row × column heatmap of dataset counts (respects query + facets). **Click a cell** to apply InstantSearch filters for those attribute values and switch to **Table**
 - **Tissue hierarchy** — InstantSearch HierarchicalMenu over `tissue_hierarchy.lvl*`; flat tissue facet still available
+- **Cell type hierarchy** — InstantSearch HierarchicalMenu over `cell_type_hierarchy.lvl*` (CL); flat cell type facet still available
 
 ## API & MCP stubs
 
@@ -157,8 +168,11 @@ WP1/explore/
   indexer/
     index_experiments.py
     ols_tissue.py
+    ols_cell_type.py
     enrich_tissue_hierarchy.py
-    ols_cache/uberon_paths.json   # OLS hierarchy cache (refreshable)
+    enrich_cell_type_hierarchy.py
+    ols_cache/uberon_paths.json   # OLS tissue (UBERON) cache
+    ols_cache/cl_paths.json       # OLS cell type (CL) cache
   api/main.py
   ui/
   README.md
