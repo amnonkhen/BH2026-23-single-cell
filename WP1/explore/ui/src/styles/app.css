@@ -308,13 +308,71 @@ a {
   text-align: center;
 }
 
+.results-table-stack {
+  display: grid;
+  gap: 0.7rem;
+  animation: crossfade 220ms ease both;
+}
+
+.results-table-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.group-by-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.group-by-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.group-by-control select {
+  appearance: none;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background:
+    linear-gradient(45deg, transparent 50%, var(--muted) 50%) calc(100% - 14px) / 5px 5px no-repeat,
+    linear-gradient(135deg, var(--muted) 50%, transparent 50%) calc(100% - 9px) / 5px 5px no-repeat,
+    #fff;
+  padding: 0.45rem 1.8rem 0.45rem 0.85rem;
+  font: inherit;
+  font-size: 0.92rem;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.group-by-control select:focus {
+  outline: 2px solid rgba(15, 106, 92, 0.35);
+  border-color: var(--accent);
+}
+
+.group-by-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+  max-width: 34rem;
+}
+
 .results-table-wrap {
   overflow: auto;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: rgba(255, 255, 255, 0.92);
   box-shadow: var(--shadow);
-  animation: crossfade 220ms ease both;
 }
 
 .results-table {
@@ -371,6 +429,30 @@ a {
   margin-top: 0.2rem;
   color: var(--muted);
   font-size: 0.8rem;
+}
+
+.results-table .group-header-row th {
+  position: static;
+  background: linear-gradient(90deg, #dceee8 0%, #eef5f1 100%);
+  color: var(--ink);
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.7rem 0.85rem;
+  border-bottom: 1px solid rgba(15, 106, 92, 0.18);
+}
+
+.group-header-label {
+  font-family: var(--serif);
+}
+
+.group-header-count {
+  margin-left: 0.65rem;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  font-weight: 500;
 }
 
 .empty-cell {
