@@ -3,41 +3,72 @@ import {
   ClearRefinements,
   Configure,
   CurrentRefinements,
+  HierarchicalMenu,
   InstantSearch,
   Pagination,
+  RefinementList,
   SearchBox,
   Stats,
 } from "react-instantsearch";
-import { FacetRefinementList } from "./components/FacetRefinementList";
 import { ResultsPanel } from "./components/ResultsPanel";
-import { TissueHierarchyMenu } from "./components/TissueHierarchyMenu";
 import { ViewToggle, type ResultsView } from "./components/ViewToggle";
 import { createSearchClient, loadSearchConfig, type SearchConfig } from "./typesense";
+
+/** InstantSearch HierarchicalMenu attributes (Typesense field.lvlN). */
+const TISSUE_HIERARCHY_ATTRIBUTES = [
+  "tissue_hierarchy.lvl0",
+  "tissue_hierarchy.lvl1",
+  "tissue_hierarchy.lvl2",
+  "tissue_hierarchy.lvl3",
+  "tissue_hierarchy.lvl4",
+  "tissue_hierarchy.lvl5",
+];
 
 const FACET_PANELS: {
   attribute: string;
   title: string;
   searchable?: boolean;
   open?: boolean;
+  /** Omit / false for low-cardinality facets so stock RefinementList has no Show more. */
+  showMore?: boolean;
 }[] = [
-  { attribute: "source", title: "Source" },
-  { attribute: "organism", title: "Organism" },
-  { attribute: "top_organ", title: "Top organ", searchable: true },
+  { attribute: "source", title: "Source", showMore: false },
+  { attribute: "organism", title: "Organism", showMore: false },
+  { attribute: "top_organ", title: "Top organ", searchable: true, showMore: true },
   // Flat tissue kept as a searchable fallback beside the OLS hierarchy menu.
-  { attribute: "tissue", title: "Tissue (flat)", searchable: true, open: false },
-  { attribute: "tissue_type", title: "Tissue type", open: false },
-  { attribute: "assay", title: "Assay", searchable: true },
-  { attribute: "disease", title: "Disease", searchable: true },
-  { attribute: "cell_type", title: "Cell type", searchable: true, open: false },
+  {
+    attribute: "tissue",
+    title: "Tissue (flat)",
+    searchable: true,
+    open: false,
+    showMore: true,
+  },
+  { attribute: "tissue_type", title: "Tissue type", open: false, showMore: false },
+  { attribute: "assay", title: "Assay", searchable: true, showMore: true },
+  { attribute: "disease", title: "Disease", searchable: true, showMore: true },
+  {
+    attribute: "cell_type",
+    title: "Cell type",
+    searchable: true,
+    open: false,
+    showMore: true,
+  },
   {
     attribute: "development_stage",
     title: "Development stage",
     searchable: true,
     open: false,
+    showMore: true,
   },
-  { attribute: "suspension_type", title: "Suspension" },
-  { attribute: "sex", title: "Sex" },
-  { attribute: "study_journal", title: "Journal", searchable: true, open: false },
+  { attribute: "suspension_type", title: "Suspension", showMore: false },
+  { attribute: "sex", title: "Sex", showMore: false },
+  {
+    attribute: "study_journal",
+    title: "Journal",
+    searchable: true,
+    open: false,
+    showMore: true,
+  },
 ];
 
 const VIEW_STORAGE_KEY = "fenix-explore-results-view";
@@ -175,7 +206,14 @@ export default function App() {
               <p className="facet-hint">
                 UBERON paths from OLS (Fenix IDs; SCP labels best-effort).
               </p>
-              <TissueHierarchyMenu />
+              <HierarchicalMenu
+                attributes={TISSUE_HIERARCHY_ATTRIBUTES}
+                separator=" > "
+                showMore
+                limit={12}
+                showMoreLimit={40}
+                sortBy={["count:desc"]}
+              />
             </details>
             {FACET_PANELS.map((panel) => (
               <details
@@ -183,9 +221,10 @@ export default function App() {
                 open={panel.open !== false}
               >
                 <summary>{panel.title}</summary>
-                <FacetRefinementList
+                <RefinementList
                   attribute={panel.attribute}
                   searchable={panel.searchable}
+                  showMore={panel.showMore !== false}
                   limit={8}
                   searchablePlaceholder={`Filter ${panel.title.toLowerCase()}…`}
                 />
