@@ -45,6 +45,8 @@ function HitRow({ hit }: { hit: ExperimentHit }) {
       <td>{joinValues(hit.top_organ, 2)}</td>
       <td>{joinValues(hit.assay, 2)}</td>
       <td>{joinValues(hit.disease, 2)}</td>
+      <td>{joinValues(hit.cell_type, 2)}</td>
+      <td>{joinValues(hit.development_stage, 2)}</td>
       <td className="num">{(hit.cell_count ?? 0).toLocaleString()}</td>
     </tr>
   );
@@ -108,6 +110,8 @@ export function ResultsPanel({ view, onOpenHits }: Props) {
                 <th scope="col">Top organ</th>
                 <th scope="col">Assay</th>
                 <th scope="col">Disease</th>
+                <th scope="col">Cell type</th>
+                <th scope="col">Dev. stage</th>
                 <th scope="col" className="num">
                   Cells
                 </th>
@@ -156,7 +160,7 @@ function GroupSection({
     <>
       {showHeader ? (
         <tr className="group-header-row">
-          <th scope="colgroup" colSpan={7}>
+          <th scope="colgroup" colSpan={9}>
             <span className="group-header-label">{label}</span>
             <span className="group-header-count">
               {count} {count === 1 ? "experiment" : "experiments"}

@@ -8,6 +8,8 @@ export type GroupByField =
   | "tissue"
   | "assay"
   | "disease"
+  | "cell_type"
+  | "development_stage"
   | "suspension_type"
   | "study_journal";
 
@@ -19,6 +21,8 @@ export const GROUP_BY_OPTIONS: { value: GroupByField; label: string }[] = [
   { value: "tissue", label: "Tissue" },
   { value: "assay", label: "Assay" },
   { value: "disease", label: "Disease" },
+  { value: "cell_type", label: "Cell type" },
+  { value: "development_stage", label: "Development stage" },
   { value: "suspension_type", label: "Suspension" },
   { value: "study_journal", label: "Journal" },
 ];

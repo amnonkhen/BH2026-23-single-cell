@@ -37,5 +37,9 @@ The Typesense indexer (`WP1/explore/indexer/`) flattens each study with `source=
 | `assay` | `metadata.library_preparation_protocol` |
 | `disease` | `metadata.disease` |
 | `sex` | `metadata.sex` |
+| `cell_type` | *not present in this search API payload* |
+| `development_stage` | *not present in this search API payload* |
 | `cell_count` / `feature_count` | `cell_count` / `gene_count` |
 | `explorer_url` | `https://singlecell.broadinstitute.org` + `study_url` |
+
+SCP study search metadata currently exposes only `species`, `organ`, `disease`, `sex`, and `library_preparation_protocol` (plus ~half of studies have empty metadata). Cell type / developmental stage facets therefore come from Fenix only until SCP provides them.

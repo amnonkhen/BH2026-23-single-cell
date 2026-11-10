@@ -14,6 +14,8 @@ export const PIVOT_FIELDS: { value: string; label: string }[] = [
   { value: "tissue_type", label: "Tissue type" },
   { value: "assay", label: "Assay" },
   { value: "disease", label: "Disease" },
+  { value: "cell_type", label: "Cell type" },
+  { value: "development_stage", label: "Development stage" },
   { value: "suspension_type", label: "Suspension" },
   { value: "sex", label: "Sex" },
   { value: "study_journal", label: "Journal" },

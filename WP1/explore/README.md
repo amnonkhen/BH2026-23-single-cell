@@ -62,6 +62,8 @@ Every document has a faceted **`source`** (`fenix` or `single_cell_portal`) plus
 | `tissue` | `tissue[].label` | `metadata.organ` |
 | `assay` | `assay[].label` | `metadata.library_preparation_protocol` |
 | `disease` | `disease[].label` | `metadata.disease` |
+| `cell_type` | `cell_type[].label` | *(not in SCP search API — empty)* |
+| `development_stage` | `development_stage[].label` | *(not in SCP search API — empty)* |
 | `sex` | `sex[].label` | `metadata.sex` |
 | `cell_count` | `cell_count` | `cell_count` |
 | `feature_count` | `feature_count` | `gene_count` |

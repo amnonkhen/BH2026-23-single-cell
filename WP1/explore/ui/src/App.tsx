@@ -13,7 +13,12 @@ import { ResultsPanel } from "./components/ResultsPanel";
 import { ViewToggle, type ResultsView } from "./components/ViewToggle";
 import { createSearchClient, loadSearchConfig, type SearchConfig } from "./typesense";
 
-const FACET_PANELS: { attribute: string; title: string; searchable?: boolean }[] = [
+const FACET_PANELS: {
+  attribute: string;
+  title: string;
+  searchable?: boolean;
+  open?: boolean;
+}[] = [
   { attribute: "source", title: "Source" },
   { attribute: "organism", title: "Organism" },
   { attribute: "top_organ", title: "Top organ", searchable: true },
@@ -21,9 +26,16 @@ const FACET_PANELS: { attribute: string; title: string; searchable?: boolean }[]
   { attribute: "tissue_type", title: "Tissue type" },
   { attribute: "assay", title: "Assay", searchable: true },
   { attribute: "disease", title: "Disease", searchable: true },
+  { attribute: "cell_type", title: "Cell type", searchable: true, open: false },
+  {
+    attribute: "development_stage",
+    title: "Development stage",
+    searchable: true,
+    open: false,
+  },
   { attribute: "suspension_type", title: "Suspension" },
   { attribute: "sex", title: "Sex" },
-  { attribute: "study_journal", title: "Journal", searchable: true },
+  { attribute: "study_journal", title: "Journal", searchable: true, open: false },
 ];
 
 const VIEW_STORAGE_KEY = "fenix-explore-results-view";
@@ -129,6 +141,8 @@ export default function App() {
             "tissue",
             "assay",
             "disease",
+            "cell_type",
+            "development_stage",
             "suspension_type",
             "cell_count",
             "feature_count",
@@ -156,7 +170,10 @@ export default function App() {
         <div className="layout">
           <aside className="facets">
             {FACET_PANELS.map((panel) => (
-              <details key={panel.attribute} open={panel.attribute !== "study_journal"}>
+              <details
+                key={panel.attribute}
+                open={panel.open !== false}
+              >
                 <summary>{panel.title}</summary>
                 <RefinementList
                   attribute={panel.attribute}

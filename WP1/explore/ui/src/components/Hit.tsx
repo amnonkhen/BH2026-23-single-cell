@@ -7,6 +7,8 @@ export type ExperimentHit = {
   tissue?: string[];
   assay?: string[];
   disease?: string[];
+  cell_type?: string[];
+  development_stage?: string[];
   suspension_type?: string[];
   cell_count?: number;
   feature_count?: number;
@@ -91,6 +93,14 @@ export function Hit({ hit }: { hit: ExperimentHit }) {
         <div>
           <dt>Disease</dt>
           <dd>{chips(hit.disease)}</dd>
+        </div>
+        <div>
+          <dt>Cell type</dt>
+          <dd>{chips(hit.cell_type, 4)}</dd>
+        </div>
+        <div>
+          <dt>Dev. stage</dt>
+          <dd>{chips(hit.development_stage, 3)}</dd>
         </div>
       </dl>
     </article>
