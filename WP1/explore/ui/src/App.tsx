@@ -3,6 +3,7 @@ import {
   ClearRefinements,
   Configure,
   CurrentRefinements,
+  HierarchicalMenu,
   InstantSearch,
   Pagination,
   RefinementList,
@@ -13,6 +14,16 @@ import { ResultsPanel } from "./components/ResultsPanel";
 import { ViewToggle, type ResultsView } from "./components/ViewToggle";
 import { createSearchClient, loadSearchConfig, type SearchConfig } from "./typesense";
 
+/** InstantSearch HierarchicalMenu attributes (Typesense field.lvlN). */
+const TISSUE_HIERARCHY_ATTRIBUTES = [
+  "tissue_hierarchy.lvl0",
+  "tissue_hierarchy.lvl1",
+  "tissue_hierarchy.lvl2",
+  "tissue_hierarchy.lvl3",
+  "tissue_hierarchy.lvl4",
+  "tissue_hierarchy.lvl5",
+];
+
 const FACET_PANELS: {
   attribute: string;
   title: string;
@@ -22,8 +33,9 @@ const FACET_PANELS: {
   { attribute: "source", title: "Source" },
   { attribute: "organism", title: "Organism" },
   { attribute: "top_organ", title: "Top organ", searchable: true },
-  { attribute: "tissue", title: "Tissue", searchable: true },
-  { attribute: "tissue_type", title: "Tissue type" },
+  // Flat tissue kept as a searchable fallback beside the OLS hierarchy menu.
+  { attribute: "tissue", title: "Tissue (flat)", searchable: true, open: false },
+  { attribute: "tissue_type", title: "Tissue type", open: false },
   { attribute: "assay", title: "Assay", searchable: true },
   { attribute: "disease", title: "Disease", searchable: true },
   { attribute: "cell_type", title: "Cell type", searchable: true, open: false },
@@ -169,6 +181,18 @@ export default function App() {
 
         <div className="layout">
           <aside className="facets">
+            <details open>
+              <summary>Tissue hierarchy</summary>
+              <p className="facet-hint">
+                UBERON paths from OLS (Fenix IDs; SCP labels best-effort).
+              </p>
+              <HierarchicalMenu
+                attributes={TISSUE_HIERARCHY_ATTRIBUTES}
+                separator=" > "
+                showMore
+                limit={10}
+              />
+            </details>
             {FACET_PANELS.map((panel) => (
               <details
                 key={panel.attribute}

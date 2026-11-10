@@ -250,11 +250,19 @@ a {
   padding: 0.35rem 0;
 }
 
+.facet-hint {
+  margin: 0.2rem 0 0.55rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
 .ais-RefinementList-searchBox {
   margin: 0.35rem 0 0.55rem;
 }
 
-.ais-RefinementList-list {
+.ais-RefinementList-list,
+.ais-HierarchicalMenu-list {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -262,20 +270,41 @@ a {
   gap: 0.35rem;
 }
 
-.ais-RefinementList-label {
+.ais-HierarchicalMenu-list--child {
+  margin: 0.35rem 0 0.2rem 0.85rem;
+  padding-left: 0.55rem;
+  border-left: 1px solid var(--line);
+}
+
+.ais-RefinementList-label,
+.ais-HierarchicalMenu-link {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: 1fr auto;
   gap: 0.45rem;
   align-items: center;
   font-size: 0.92rem;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
 }
 
-.ais-RefinementList-count {
+.ais-RefinementList-label {
+  grid-template-columns: auto 1fr auto;
+}
+
+.ais-HierarchicalMenu-item--selected > .ais-HierarchicalMenu-link {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.ais-RefinementList-count,
+.ais-HierarchicalMenu-count {
   color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
 
-.ais-RefinementList-showMore {
+.ais-RefinementList-showMore,
+.ais-HierarchicalMenu-showMore {
   margin-top: 0.55rem;
   border: 0;
   background: transparent;

@@ -21,6 +21,15 @@ from dotenv import load_dotenv
 import typesense
 from typesense.exceptions import ObjectAlreadyExists, ObjectNotFound
 
+from ols_tissue import (
+    MAX_LEVELS as TISSUE_HIER_MAX_LEVELS,
+    load_cache as load_ols_cache,
+    paths_to_hierarchy_fields,
+    resolve_path,
+    warm_cache_for_curies,
+    warm_cache_for_labels,
+)
+
 ROOT = Path(__file__).resolve().parents[1]
 WP1 = ROOT.parent
 load_dotenv(ROOT / ".env")
@@ -46,6 +55,12 @@ FACET_FIELDS = [
     "top_organ",
     "tissue",
     "tissue_type",
+    "tissue_hierarchy.lvl0",
+    "tissue_hierarchy.lvl1",
+    "tissue_hierarchy.lvl2",
+    "tissue_hierarchy.lvl3",
+    "tissue_hierarchy.lvl4",
+    "tissue_hierarchy.lvl5",
     "assay",
     "disease",
     "suspension_type",
@@ -199,7 +214,71 @@ def parse_published_at(value: Any) -> int:
         return 0
 
 
-def flatten_fenix(raw: dict[str, Any]) -> dict[str, Any]:
+def empty_tissue_hierarchy() -> dict[str, list[str]]:
+    return {f"tissue_hierarchy.lvl{i}": [] for i in range(TISSUE_HIER_MAX_LEVELS)}
+
+
+def fenix_tissue_paths(
+    tissues: list[Any], ols_cache: dict[str, Any] | None
+) -> list[list[str]]:
+    """Build OLS hierarchy paths for Fenix tissue objects (curie-first)."""
+    paths: list[list[str]] = []
+    if ols_cache is None:
+        return paths
+    for item in tissues:
+        if not isinstance(item, dict):
+            continue
+        curie = item.get("ontology_term_id") or item.get("top-organ-uberon")
+        label = item.get("label") or item.get("top-organ-name")
+        path = resolve_path(
+            curie=str(curie) if curie else None,
+            label=str(label) if label else None,
+            cache=ols_cache,
+            refresh=False,
+            sleep_s=0,
+        )
+        # Fallback: top-organ → tissue label when OLS misses
+        if not path:
+            fallback = [
+                x
+                for x in (
+                    item.get("top-organ-name"),
+                    item.get("label"),
+                )
+                if x
+            ]
+            # dedupe consecutive
+            cleaned: list[str] = []
+            for raw in fallback:
+                text = canonicalize_facet_value(str(raw))
+                if text and (not cleaned or cleaned[-1].casefold() != text.casefold()):
+                    cleaned.append(text)
+            path = cleaned
+        if path:
+            paths.append(path)
+    return paths
+
+
+def scp_tissue_paths(
+    organs: list[str], ols_cache: dict[str, Any] | None
+) -> list[list[str]]:
+    """Best-effort OLS paths for SCP organ labels."""
+    paths: list[list[str]] = []
+    if ols_cache is None:
+        return [[o] for o in organs if o]
+    for organ in organs:
+        path = resolve_path(
+            label=organ, cache=ols_cache, refresh=False, sleep_s=0
+        )
+        if not path:
+            path = [organ]
+        paths.append(path)
+    return paths
+
+
+def flatten_fenix(
+    raw: dict[str, Any], *, ols_cache: dict[str, Any] | None = None
+) -> dict[str, Any]:
     tissues = raw.get("tissue") or []
     if not isinstance(tissues, list):
         tissues = [tissues]
@@ -226,6 +305,10 @@ def flatten_fenix(raw: dict[str, Any]) -> dict[str, Any]:
     assay = labels(raw.get("assay"))
     disease = labels(raw.get("disease"))
     cell_type = labels(raw.get("cell_type"))
+    hierarchy = paths_to_hierarchy_fields(
+        fenix_tissue_paths(tissues, ols_cache),
+        canonicalize=canonicalize_facet_value,
+    )
 
     search_bits = [
         SOURCE_FENIX,
@@ -242,7 +325,7 @@ def flatten_fenix(raw: dict[str, Any]) -> dict[str, Any]:
         *top_organ,
     ]
 
-    return {
+    doc = {
         "id": f"fenix::{doc_id}",
         "title": str(title),
         "source": SOURCE_FENIX,
@@ -267,9 +350,13 @@ def flatten_fenix(raw: dict[str, Any]) -> dict[str, Any]:
         "h5ad_url": str(h5ad_url or ""),
         "search_blob": " | ".join(str(bit) for bit in search_bits if bit),
     }
+    doc.update(hierarchy or empty_tissue_hierarchy())
+    return doc
 
 
-def flatten_scp(raw: dict[str, Any]) -> dict[str, Any]:
+def flatten_scp(
+    raw: dict[str, Any], *, ols_cache: dict[str, Any] | None = None
+) -> dict[str, Any]:
     meta = raw.get("metadata") if isinstance(raw.get("metadata"), dict) else {}
     accession = str(raw.get("accession") or "").strip()
     if not accession:
@@ -287,6 +374,10 @@ def flatten_scp(raw: dict[str, Any]) -> dict[str, Any]:
         if study_url.startswith("/")
         else study_url or f"{SCP_ORIGIN}/single_cell/study/{accession}"
     )
+    hierarchy = paths_to_hierarchy_fields(
+        scp_tissue_paths(organs, ols_cache),
+        canonicalize=canonicalize_facet_value,
+    )
 
     search_bits = [
         SOURCE_SCP,
@@ -302,7 +393,7 @@ def flatten_scp(raw: dict[str, Any]) -> dict[str, Any]:
         *sex,
     ]
 
-    return {
+    doc = {
         "id": f"scp::{accession}",
         "title": title,
         "source": SOURCE_SCP,
@@ -327,6 +418,8 @@ def flatten_scp(raw: dict[str, Any]) -> dict[str, Any]:
         "h5ad_url": "",
         "search_blob": " | ".join(str(bit) for bit in search_bits if bit),
     }
+    doc.update(hierarchy or empty_tissue_hierarchy())
+    return doc
 
 
 COLLECTION_SCHEMA: dict[str, Any] = {
@@ -340,6 +433,13 @@ COLLECTION_SCHEMA: dict[str, Any] = {
         {"name": "top_organ", "type": "string[]", "facet": True, "optional": True},
         {"name": "tissue", "type": "string[]", "facet": True, "optional": True},
         {"name": "tissue_type", "type": "string[]", "facet": True, "optional": True},
+        # InstantSearch HierarchicalMenu (Typesense field.lvlN convention)
+        {"name": "tissue_hierarchy.lvl0", "type": "string[]", "facet": True, "optional": True},
+        {"name": "tissue_hierarchy.lvl1", "type": "string[]", "facet": True, "optional": True},
+        {"name": "tissue_hierarchy.lvl2", "type": "string[]", "facet": True, "optional": True},
+        {"name": "tissue_hierarchy.lvl3", "type": "string[]", "facet": True, "optional": True},
+        {"name": "tissue_hierarchy.lvl4", "type": "string[]", "facet": True, "optional": True},
+        {"name": "tissue_hierarchy.lvl5", "type": "string[]", "facet": True, "optional": True},
         {"name": "assay", "type": "string[]", "facet": True, "optional": True},
         {"name": "disease", "type": "string[]", "facet": True, "optional": True},
         {"name": "suspension_type", "type": "string[]", "facet": True, "optional": True},
@@ -487,20 +587,31 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Drop and recreate the Typesense collection before indexing",
     )
+    parser.add_argument(
+        "--skip-ols",
+        action="store_true",
+        help="Skip OLS tissue hierarchy enrichment (hierarchy fields stay empty)",
+    )
+    parser.add_argument(
+        "--refresh-ols",
+        action="store_true",
+        help="Re-query OLS even when cache entries exist",
+    )
     parser.add_argument("--batch-size", type=int, default=100)
     args = parser.parse_args(argv)
 
     docs: list[dict[str, Any]] = []
     counts = {SOURCE_FENIX: 0, SOURCE_SCP: 0}
+    ols_cache: dict[str, Any] | None = None
+
+    fenix_records: list[dict[str, Any]] = []
+    scp_records: list[dict[str, Any]] = []
 
     if not args.skip_fenix:
         if not args.fenix_json.is_file():
             print(f"Missing Fenix JSON: {args.fenix_json}", file=sys.stderr)
             return 1
-        fenix_docs = [flatten_fenix(record) for record in load_fenix(args.fenix_json)]
-        docs.extend(fenix_docs)
-        counts[SOURCE_FENIX] = len(fenix_docs)
-        print(f"Prepared {len(fenix_docs)} Fenix docs from {args.fenix_json}")
+        fenix_records = load_fenix(args.fenix_json)
 
     if not args.skip_scp:
         if not args.scp_json.is_file():
@@ -510,7 +621,51 @@ def main(argv: list[str] | None = None) -> int:
                 file=sys.stderr,
             )
             return 1
-        scp_docs = [flatten_scp(record) for record in load_scp(args.scp_json)]
+        scp_records = load_scp(args.scp_json)
+
+    if not args.skip_ols and (fenix_records or scp_records):
+        print("Warming OLS tissue hierarchy cache…")
+        curies: list[str] = []
+        for exp in fenix_records:
+            for tissue in exp.get("tissue") or []:
+                if isinstance(tissue, dict):
+                    if tissue.get("ontology_term_id"):
+                        curies.append(str(tissue["ontology_term_id"]))
+                    if tissue.get("top-organ-uberon"):
+                        curies.append(str(tissue["top-organ-uberon"]))
+        warm_cache_for_curies(
+            curies, refresh=args.refresh_ols, sleep_s=0.05 if args.refresh_ols else 0.02
+        )
+        organ_labels: list[str] = []
+        for study in scp_records:
+            meta = study.get("metadata") if isinstance(study, dict) else {}
+            for organ in (meta or {}).get("organ") or []:
+                organ_labels.append(str(organ))
+        if organ_labels:
+            warm_cache_for_labels(
+                organ_labels,
+                refresh=args.refresh_ols,
+                sleep_s=0.05 if args.refresh_ols else 0.02,
+            )
+        ols_cache = load_ols_cache()
+        print(
+            f"OLS cache loaded "
+            f"({len(ols_cache.get('by_curie', {}))} curies, "
+            f"{len(ols_cache.get('by_label', {}))} labels)"
+        )
+
+    if fenix_records:
+        fenix_docs = [
+            flatten_fenix(record, ols_cache=ols_cache) for record in fenix_records
+        ]
+        docs.extend(fenix_docs)
+        counts[SOURCE_FENIX] = len(fenix_docs)
+        print(f"Prepared {len(fenix_docs)} Fenix docs from {args.fenix_json}")
+
+    if scp_records:
+        scp_docs = [
+            flatten_scp(record, ols_cache=ols_cache) for record in scp_records
+        ]
         docs.extend(scp_docs)
         counts[SOURCE_SCP] = len(scp_docs)
         print(f"Prepared {len(scp_docs)} SCP docs from {args.scp_json}")

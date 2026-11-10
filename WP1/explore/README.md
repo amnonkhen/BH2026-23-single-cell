@@ -33,6 +33,7 @@ cp -n .env.example .env   # optional; defaults work locally
 docker compose up -d
 
 # 2) Index both catalogs into one collection
+#    (warms OLS tissue hierarchy cache on first run; Fenix curies + SCP labels)
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r indexer/requirements.txt -r api/requirements.txt
@@ -60,6 +61,7 @@ Every document has a faceted **`source`** (`fenix` or `single_cell_portal`) plus
 | `organism` | `organism[].label` | `metadata.species` |
 | `top_organ` | `tissue[].top-organ-name` | `metadata.organ` (also used as tissue) |
 | `tissue` | `tissue[].label` | `metadata.organ` |
+| `tissue_hierarchy.lvl0…lvl5` | OLS UBERON path from `tissue[].ontology_term_id` | Best-effort OLS label → UBERON for `metadata.organ` |
 | `assay` | `assay[].label` | `metadata.library_preparation_protocol` |
 | `disease` | `disease[].label` | `metadata.disease` |
 | `cell_type` | `cell_type[].label` | *(not in SCP search API — empty)* |
@@ -73,16 +75,49 @@ Document ids are namespaced (`fenix::…`, `scp::SCP####`) to avoid collisions.
 
 Facet string values are **case-normalized** at index time (`canonicalize_facet_value`): case-only variants merge (e.g. `brain`/`Brain` → `Brain`, `10X 3' v2`/`10x 3' v2` → `10x 3' v2`).
 
-Re-index after refreshing either snapshot:
+### Tissue hierarchy (OLS)
+
+At index time the indexer resolves tissues via [EBI OLS4](https://www.ebi.ac.uk/ols4/) and writes Algolia-style `tissue_hierarchy.lvlN` fields (`"Organ > Substructure > …"`). The UI uses InstantSearch **HierarchicalMenu** for browse, and keeps a collapsed flat **Tissue** facet for search/keyword use.
+
+| Source | Resolution |
+|--------|------------|
+| **Fenix** (primary) | `tissue[].ontology_term_id` (and `top-organ-uberon`) → OLS UBERON jstree path |
+| **SCP** (best-effort) | exact OLS label search on `metadata.organ`; falls back to a single-level path |
+
+Responses are cached on disk at `indexer/ols_cache/uberon_paths.json` so re-indexes do not hammer OLS.
+
+**Refresh the OLS cache** (e.g. after new tissues appear in the catalogs, or to pick up ontology updates):
+
+```bash
+cd WP1/explore
+source .venv/bin/activate
+
+# Standalone warm (Fenix curies; add --scp for SCP organ labels)
+python indexer/enrich_tissue_hierarchy.py --scp
+
+# Force re-fetch from OLS (ignore existing cache entries)
+python indexer/enrich_tissue_hierarchy.py --refresh --scp
+
+# Or refresh while indexing
+python indexer/index_experiments.py --recreate --refresh-ols
+
+# Skip hierarchy enrichment entirely
+python indexer/index_experiments.py --recreate --skip-ols
+```
+
+Then re-index so Typesense docs pick up the new paths:
 
 ```bash
 python indexer/index_experiments.py --recreate
 ```
 
+Re-index after refreshing either catalog snapshot as well (same command).
+
 ## UI views
 
 - **Cards / Table** — InstantSearch hits; Table has **Group by** section headers
 - **Pivot** — row × column heatmap of dataset counts (respects query + facets). **Click a cell** to apply InstantSearch filters for those attribute values and switch to **Table**
+- **Tissue hierarchy** — InstantSearch HierarchicalMenu over `tissue_hierarchy.lvl*`; flat tissue facet still available
 
 ## API & MCP stubs
 
@@ -119,7 +154,11 @@ Wrap the same handlers with the MCP Python SDK / FastMCP (`@mcp.tool()` → call
 WP1/explore/
   docker-compose.yml
   .env.example
-  indexer/index_experiments.py
+  indexer/
+    index_experiments.py
+    ols_tissue.py
+    enrich_tissue_hierarchy.py
+    ols_cache/uberon_paths.json   # OLS hierarchy cache (refreshable)
   api/main.py
   ui/
   README.md
