@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
-import { useHits } from "react-instantsearch";
+import { useEffect, useMemo, useState } from "react";
+import { useHits, useInstantSearch } from "react-instantsearch";
 import { GROUP_BY_OPTIONS, groupHits, type GroupByField } from "./groupBy";
 import { Hit, hitTitle, joinValues, type ExperimentHit } from "./Hit";
 import { PivotHeatmap } from "./PivotHeatmap";
 import type { ResultsView } from "./ViewToggle";
 
 const GROUP_STORAGE_KEY = "fenix-explore-group-by";
+const NONE_LABEL = "(none)";
 
 function loadStoredGroupBy(): GroupByField {
   try {
@@ -17,6 +18,15 @@ function loadStoredGroupBy(): GroupByField {
     // ignore
   }
   return "none";
+}
+
+function groupDomId(key: string): string {
+  const slug = key
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 80);
+  return `group-section-${slug || "none"}`;
 }
 
 type Props = {
@@ -54,7 +64,9 @@ function HitRow({ hit }: { hit: ExperimentHit }) {
 
 export function ResultsPanel({ view, onOpenHits }: Props) {
   const { items } = useHits<ExperimentHit>();
+  const { setIndexUiState } = useInstantSearch();
   const [groupBy, setGroupBy] = useState<GroupByField>(() => loadStoredGroupBy());
+  const [activeChip, setActiveChip] = useState<string | null>(null);
 
   useEffect(() => {
     try {
@@ -62,7 +74,44 @@ export function ResultsPanel({ view, onOpenHits }: Props) {
     } catch {
       // ignore
     }
+    setActiveChip(null);
   }, [groupBy]);
+
+  const groups = useMemo(
+    () => (view === "table" ? groupHits(items, groupBy) : []),
+    [view, items, groupBy]
+  );
+
+  const topGroups = useMemo(() => {
+    if (groupBy === "none") return [];
+    return [...groups]
+      .sort((a, b) => {
+        const byCount = b.hits.length - a.hits.length;
+        if (byCount !== 0) return byCount;
+        return a.label.localeCompare(b.label, undefined, { sensitivity: "base" });
+      })
+      .slice(0, 10);
+  }, [groups, groupBy]);
+
+  const focusGroup = (key: string, label: string) => {
+    setActiveChip(key);
+
+    const el = document.getElementById(groupDomId(key));
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    if (groupBy === "none" || label === NONE_LABEL) return;
+
+    setIndexUiState((previous) => ({
+      ...previous,
+      page: 1,
+      refinementList: {
+        ...(previous.refinementList ?? {}),
+        [groupBy]: [label],
+      },
+    }));
+  };
 
   if (view === "pivot") {
     return <PivotHeatmap onOpenHits={onOpenHits} />;
@@ -73,7 +122,6 @@ export function ResultsPanel({ view, onOpenHits }: Props) {
   }
 
   if (view === "table") {
-    const groups = groupHits(items, groupBy);
     const grouped = groupBy !== "none";
 
     return (
@@ -95,9 +143,30 @@ export function ResultsPanel({ view, onOpenHits }: Props) {
           </label>
           <p className="group-by-hint">
             {grouped
-              ? "Sections the current page of hits (multi-valued fields may appear in more than one group)."
+              ? "Top groups by count on this page — click a chip to scroll and filter InstantSearch."
               : "Choose an attribute to nest rows under section headers."}
           </p>
+
+          {grouped && topGroups.length > 0 ? (
+            <div className="group-chips" role="list" aria-label="Top groups by dataset count">
+              {topGroups.map((group) => {
+                const selected = activeChip === group.key;
+                return (
+                  <button
+                    key={group.key}
+                    type="button"
+                    role="listitem"
+                    className={selected ? "group-chip is-active" : "group-chip"}
+                    title={`${group.label} — ${group.hits.length} on this page; click to scroll & filter`}
+                    onClick={() => focusGroup(group.key, group.label)}
+                  >
+                    <span className="group-chip-label">{group.label}</span>
+                    <span className="group-chip-count">{group.hits.length}</span>
+                  </button>
+                );
+              })}
+            </div>
+          ) : null}
         </div>
 
         <div className="results-table-wrap">
@@ -121,9 +190,11 @@ export function ResultsPanel({ view, onOpenHits }: Props) {
               {groups.map((group) => (
                 <GroupSection
                   key={group.key}
+                  id={groupDomId(group.key)}
                   label={group.label}
                   count={group.hits.length}
                   showHeader={grouped}
+                  highlighted={activeChip === group.key}
                   hits={group.hits}
                 />
               ))}
@@ -146,20 +217,29 @@ export function ResultsPanel({ view, onOpenHits }: Props) {
 }
 
 function GroupSection({
+  id,
   label,
   count,
   showHeader,
+  highlighted,
   hits,
 }: {
+  id: string;
   label: string;
   count: number;
   showHeader: boolean;
+  highlighted: boolean;
   hits: ExperimentHit[];
 }) {
   return (
     <>
       {showHeader ? (
-        <tr className="group-header-row">
+        <tr
+          id={id}
+          className={
+            highlighted ? "group-header-row is-highlighted" : "group-header-row"
+          }
+        >
           <th scope="colgroup" colSpan={9}>
             <span className="group-header-label">{label}</span>
             <span className="group-header-count">
