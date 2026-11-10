@@ -209,9 +209,9 @@ export default function App() {
               <HierarchicalMenu
                 attributes={TISSUE_HIERARCHY_ATTRIBUTES}
                 separator=" > "
-                showMore
+                showMore={true}
                 limit={12}
-                showMoreLimit={40}
+                showMoreLimit={100}
                 sortBy={["count:desc"]}
               />
             </details>
