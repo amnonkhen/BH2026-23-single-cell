@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Flatten experiment catalogs into explore documents (Parquet export).
 
-Every document includes a faceted `source` field (e.g. fenix or a partner
+Every document includes a faceted `source` field (e.g. scfair or a partner
 source name passed to export_parquet.py --json SOURCE=PATH).
 """
 
@@ -11,17 +11,6 @@ import json
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Iterable
-
-from ols_cell_type import (
-    MAX_LEVELS as CELL_TYPE_HIER_MAX_LEVELS,
-    paths_to_hierarchy_fields as cell_type_paths_to_hierarchy_fields,
-    resolve_path as resolve_cl_path,
-)
-from ols_tissue import (
-    MAX_LEVELS as TISSUE_HIER_MAX_LEVELS,
-    paths_to_hierarchy_fields,
-    resolve_path,
-)
 
 ROOT = Path(__file__).resolve().parents[1]
 WP1 = ROOT.parent
@@ -176,90 +165,7 @@ def parse_published_at(value: Any) -> int:
         return 0
 
 
-def empty_tissue_hierarchy() -> dict[str, list[str]]:
-    return {f"tissue_hierarchy.lvl{i}": [] for i in range(TISSUE_HIER_MAX_LEVELS)}
-
-
-def empty_cell_type_hierarchy() -> dict[str, list[str]]:
-    return {
-        f"cell_type_hierarchy.lvl{i}": [] for i in range(CELL_TYPE_HIER_MAX_LEVELS)
-    }
-
-
-def fenix_tissue_paths(
-    tissues: list[Any], ols_cache: dict[str, Any] | None
-) -> list[list[str]]:
-    """Build OLS hierarchy paths for Fenix tissue objects (curie-first)."""
-    paths: list[list[str]] = []
-    if ols_cache is None:
-        return paths
-    for item in tissues:
-        if not isinstance(item, dict):
-            continue
-        curie = item.get("ontology_term_id") or item.get("top-organ-uberon")
-        label = item.get("label") or item.get("top-organ-name")
-        path = resolve_path(
-            curie=str(curie) if curie else None,
-            label=str(label) if label else None,
-            cache=ols_cache,
-            refresh=False,
-            sleep_s=0,
-        )
-        # Fallback: top-organ → tissue label when OLS misses
-        if not path:
-            fallback = [
-                x
-                for x in (
-                    item.get("top-organ-name"),
-                    item.get("label"),
-                )
-                if x
-            ]
-            # dedupe consecutive
-            cleaned: list[str] = []
-            for raw in fallback:
-                text = canonicalize_facet_value(str(raw))
-                if text and (not cleaned or cleaned[-1].casefold() != text.casefold()):
-                    cleaned.append(text)
-            path = cleaned
-        if path:
-            paths.append(path)
-    return paths
-
-
-def fenix_cell_type_paths(
-    cell_types: list[Any], cl_cache: dict[str, Any] | None
-) -> list[list[str]]:
-    """Build OLS CL hierarchy paths for Fenix cell_type objects (curie-first)."""
-    paths: list[list[str]] = []
-    if cl_cache is None:
-        return paths
-    for item in cell_types:
-        if not isinstance(item, dict):
-            continue
-        curie = item.get("ontology_term_id")
-        label = item.get("label")
-        path = resolve_cl_path(
-            curie=str(curie) if curie else None,
-            label=str(label) if label else None,
-            cache=cl_cache,
-            refresh=False,
-            sleep_s=0,
-        )
-        if not path and label:
-            text = canonicalize_facet_value(str(label))
-            path = [text] if text else []
-        if path:
-            paths.append(path)
-    return paths
-
-
-def flatten_fenix(
-    raw: dict[str, Any],
-    *,
-    ols_cache: dict[str, Any] | None = None,
-    cl_cache: dict[str, Any] | None = None,
-) -> dict[str, Any]:
+def flatten_fenix(raw: dict[str, Any]) -> dict[str, Any]:
     tissues = raw.get("tissue") or []
     if not isinstance(tissues, list):
         tissues = [tissues]
@@ -289,14 +195,6 @@ def flatten_fenix(
     if not isinstance(raw_cell_types, list):
         raw_cell_types = [raw_cell_types]
     cell_type = labels(raw_cell_types)
-    hierarchy = paths_to_hierarchy_fields(
-        fenix_tissue_paths(tissues, ols_cache),
-        canonicalize=canonicalize_facet_value,
-    )
-    cell_hierarchy = cell_type_paths_to_hierarchy_fields(
-        fenix_cell_type_paths(raw_cell_types, cl_cache),
-        canonicalize=canonicalize_facet_value,
-    )
 
     search_bits = [
         SOURCE_SCFAIR,
@@ -313,7 +211,7 @@ def flatten_fenix(
         *top_organ,
     ]
 
-    doc = {
+    return {
         "id": f"scfair::{doc_id}",
         "title": str(title),
         "source": SOURCE_SCFAIR,
@@ -338,9 +236,6 @@ def flatten_fenix(
         "h5ad_url": str(h5ad_url or ""),
         "search_blob": " | ".join(str(bit) for bit in search_bits if bit),
     }
-    doc.update(hierarchy or empty_tissue_hierarchy())
-    doc.update(cell_hierarchy or empty_cell_type_hierarchy())
-    return doc
 
 
 def load_fenix(path: Path) -> list[dict[str, Any]]:
@@ -376,13 +271,7 @@ def load_partner(path: Path) -> list[dict[str, Any]]:
     return records
 
 
-def flatten_partner(
-    raw: dict[str, Any],
-    *,
-    source: str,
-    ols_cache: dict[str, Any] | None = None,
-    cl_cache: dict[str, Any] | None = None,
-) -> dict[str, Any]:
+def flatten_partner(raw: dict[str, Any], *, source: str) -> dict[str, Any]:
     """Flatten a partner record (same Term shape as the new-source ingest schema)."""
     source = str(source or raw.get("source") or "partner").strip() or "partner"
     tissues = raw.get("tissue") or []
@@ -413,14 +302,6 @@ def flatten_partner(
     assay = labels(raw.get("assay"))
     disease = labels(raw.get("disease"))
     cell_type = labels(raw_cell_types)
-    hierarchy = paths_to_hierarchy_fields(
-        fenix_tissue_paths(tissues, ols_cache),
-        canonicalize=canonicalize_facet_value,
-    )
-    cell_hierarchy = cell_type_paths_to_hierarchy_fields(
-        fenix_cell_type_paths(raw_cell_types, cl_cache),
-        canonicalize=canonicalize_facet_value,
-    )
 
     search_bits = [
         source,
@@ -435,7 +316,7 @@ def flatten_partner(
         *tissue,
         *top_organ,
     ]
-    doc = {
+    return {
         "id": f"{source}::{doc_id}",
         "title": str(title),
         "source": source,
@@ -460,8 +341,3 @@ def flatten_partner(
         "h5ad_url": str(h5ad_url or ""),
         "search_blob": " | ".join(str(bit) for bit in search_bits if bit),
     }
-    doc.update(hierarchy or empty_tissue_hierarchy())
-    doc.update(cell_hierarchy or empty_cell_type_hierarchy())
-    return doc
-
-

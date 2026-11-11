@@ -2,7 +2,7 @@
 """Export flattened experiment catalogs to Parquet for the browser UI.
 
 Built-in source:
-  - Fenix (`--fenix-json`)
+  - Fenix (`--fenix-json`) → `source=scfair`
 
 Additional partner JSON files (new-source ingest schema):
 
@@ -30,24 +30,9 @@ from catalog import (
     load_fenix,
     load_partner,
 )
-from ols_cell_type import (
-    load_cache as load_cl_cache,
-    warm_cache_for_curies as warm_cl_cache_for_curies,
-)
-from ols_tissue import (
-    load_cache as load_ols_cache,
-    warm_cache_for_curies,
-    warm_cache_for_labels,
-)
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUT = ROOT / "ui" / "public" / "experiments.parquet"
-
-HIERARCHY_RENAMES = {
-    f"tissue_hierarchy.lvl{i}": f"tissue_hierarchy_lvl{i}" for i in range(6)
-} | {
-    f"cell_type_hierarchy.lvl{i}": f"cell_type_hierarchy_lvl{i}" for i in range(6)
-}
 
 LIST_FIELDS = [
     "organism",
@@ -61,13 +46,7 @@ LIST_FIELDS = [
     "development_stage",
     "self_reported_ethnicity",
     "cell_type",
-    *[f"tissue_hierarchy_lvl{i}" for i in range(6)],
-    *[f"cell_type_hierarchy_lvl{i}" for i in range(6)],
 ]
-
-
-def rename_doc(doc: dict[str, Any]) -> dict[str, Any]:
-    return {HIERARCHY_RENAMES.get(key, key): value for key, value in doc.items()}
 
 
 def parse_source_json(value: str) -> tuple[str, Path]:
@@ -90,93 +69,22 @@ def collect_docs(
     fenix_json: Path,
     skip_fenix: bool,
     extras: list[tuple[str, Path]],
-    skip_ols: bool,
-    refresh_ols: bool,
 ) -> list[dict[str, Any]]:
-    fenix_records: list[dict[str, Any]] = []
-    partner_records: list[tuple[str, list[dict[str, Any]]]] = []
-    ols_cache: dict[str, Any] | None = None
-    cl_cache: dict[str, Any] | None = None
+    docs: list[dict[str, Any]] = []
 
     if not skip_fenix:
         if not fenix_json.is_file():
             raise FileNotFoundError(f"Missing Fenix JSON: {fenix_json}")
         fenix_records = load_fenix(fenix_json)
+        fenix_docs = [flatten_fenix(record) for record in fenix_records]
+        docs.extend(fenix_docs)
+        print(f"Prepared {len(fenix_docs)} Fenix docs from {fenix_json}")
 
     for source, path in extras:
         if not path.is_file():
             raise FileNotFoundError(f"Missing partner JSON for {source}: {path}")
-        partner_records.append((source, load_partner(path)))
-
-    if not skip_ols and (fenix_records or partner_records):
-        print("Warming OLS tissue hierarchy cache…")
-        curies: list[str] = []
-        organ_labels: list[str] = []
-        cl_curies: list[str] = []
-
-        for exp in fenix_records:
-            for tissue in exp.get("tissue") or []:
-                if isinstance(tissue, dict):
-                    if tissue.get("ontology_term_id"):
-                        curies.append(str(tissue["ontology_term_id"]))
-                    if tissue.get("top-organ-uberon"):
-                        curies.append(str(tissue["top-organ-uberon"]))
-            for cell in exp.get("cell_type") or []:
-                if isinstance(cell, dict) and cell.get("ontology_term_id"):
-                    cl_curies.append(str(cell["ontology_term_id"]))
-
-        for _source, records in partner_records:
-            for exp in records:
-                for tissue in exp.get("tissue") or []:
-                    if isinstance(tissue, dict):
-                        if tissue.get("ontology_term_id"):
-                            curies.append(str(tissue["ontology_term_id"]))
-                        if tissue.get("top-organ-uberon"):
-                            curies.append(str(tissue["top-organ-uberon"]))
-                    else:
-                        organ_labels.append(str(tissue))
-                for cell in exp.get("cell_type") or []:
-                    if isinstance(cell, dict) and cell.get("ontology_term_id"):
-                        cl_curies.append(str(cell["ontology_term_id"]))
-
-        warm_cache_for_curies(
-            curies, refresh=refresh_ols, sleep_s=0.05 if refresh_ols else 0.02
-        )
-        if organ_labels:
-            warm_cache_for_labels(
-                organ_labels,
-                refresh=refresh_ols,
-                sleep_s=0.05 if refresh_ols else 0.02,
-            )
-        ols_cache = load_ols_cache()
-
-        print("Warming OLS cell-type (CL) hierarchy cache…")
-        if cl_curies:
-            warm_cl_cache_for_curies(
-                cl_curies,
-                refresh=refresh_ols,
-                sleep_s=0.05 if refresh_ols else 0.02,
-            )
-        cl_cache = load_cl_cache()
-
-    docs: list[dict[str, Any]] = []
-    if fenix_records:
-        fenix_docs = [
-            rename_doc(flatten_fenix(record, ols_cache=ols_cache, cl_cache=cl_cache))
-            for record in fenix_records
-        ]
-        docs.extend(fenix_docs)
-        print(f"Prepared {len(fenix_docs)} Fenix docs from {fenix_json}")
-
-    for source, records in partner_records:
-        partner_docs = [
-            rename_doc(
-                flatten_partner(
-                    record, source=source, ols_cache=ols_cache, cl_cache=cl_cache
-                )
-            )
-            for record in records
-        ]
+        records = load_partner(path)
+        partner_docs = [flatten_partner(record, source=source) for record in records]
         docs.extend(partner_docs)
         print(f"Prepared {len(partner_docs)} docs for source={source}")
 
@@ -226,16 +134,6 @@ def main(argv: list[str] | None = None) -> int:
         metavar="SOURCE=PATH",
         help="Extra partner catalog (repeatable). Example: --json partner=./data.json",
     )
-    parser.add_argument(
-        "--skip-ols",
-        action="store_true",
-        help="Skip OLS hierarchy enrichment (hierarchy columns stay empty)",
-    )
-    parser.add_argument(
-        "--refresh-ols",
-        action="store_true",
-        help="Re-query OLS even when cache entries exist",
-    )
     args = parser.parse_args(argv)
 
     try:
@@ -243,8 +141,6 @@ def main(argv: list[str] | None = None) -> int:
             fenix_json=args.fenix_json,
             skip_fenix=args.skip_fenix,
             extras=args.extra_json,
-            skip_ols=args.skip_ols,
-            refresh_ols=args.refresh_ols,
         )
     except FileNotFoundError as exc:
         print(str(exc), file=sys.stderr)

@@ -74,10 +74,9 @@ const FACET_PANELS: {
   { field: "source", title: "Source" },
   { field: "organism", title: "Organism" },
   { field: "top_organ", title: "Top organ", searchable: true },
-  { field: "tissue_hierarchy_lvl0", title: "Tissue hierarchy", searchable: true },
   {
     field: "tissue",
-    title: "Tissue (flat)",
+    title: "Tissue",
     searchable: true,
     open: false,
   },
@@ -85,15 +84,9 @@ const FACET_PANELS: {
   { field: "assay", title: "Assay", searchable: true },
   { field: "disease", title: "Disease", searchable: true },
   {
-    field: "cell_type_hierarchy_lvl0",
-    title: "Cell type hierarchy",
-    searchable: true,
-  },
-  {
     field: "cell_type",
-    title: "Cell type (flat)",
+    title: "Cell type",
     searchable: true,
-    open: false,
   },
   {
     field: "development_stage",

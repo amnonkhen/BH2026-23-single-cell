@@ -9,7 +9,7 @@ Catalogs:
 
 | Piece | Role |
 |-------|------|
-| **Python exporter** | Flattens catalogs (+ OLS tissue/cell-type hierarchy) → `ui/public/experiments.parquet` |
+| **Python exporter** | Flattens catalogs → `ui/public/experiments.parquet` |
 | **React + Vite + MUI + hyparquet** | MUI widgets; loads Parquet in the browser; search/facets/pivot in memory |
 
 > Why not DuckDB-WASM? Its `.wasm` is ~34 MiB and dominated cold start (~30s). For a few hundred catalog rows, hyparquet + JS filters is enough.
@@ -64,22 +64,12 @@ The UI deploys from `WP1/explore/ui` via [`.github/workflows/deploy-explore-page
 
 After that, every push that changes the UI (or a manual **Actions → Deploy explore UI to GitHub Pages → Run workflow**) refreshes the site.
 
-### OLS hierarchy refresh
-
-```bash
-python indexer/export_parquet.py --refresh-ols
-python indexer/enrich_tissue_hierarchy.py
-python indexer/enrich_cell_type_hierarchy.py
-python indexer/export_parquet.py
-```
-
 ## Layout
 
 ```
 WP1/explore/
   indexer/
     catalog.py / export_parquet.py
-    ols_*.py / ols_cache/
   ui/
     public/experiments.parquet
     src/catalogQuery.ts          # hyparquet load + in-memory query

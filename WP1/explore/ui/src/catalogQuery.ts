@@ -9,7 +9,7 @@ import { parquetReadObjects } from "hyparquet";
 import { compressors } from "hyparquet-compressors";
 
 /** Cache-bust so GitHub Pages / browsers cannot keep a stale HTML 404 as parquet. */
-export const PARQUET_URL = `${import.meta.env.BASE_URL}experiments.parquet?v=3`;
+export const PARQUET_URL = `${import.meta.env.BASE_URL}experiments.parquet?v=4`;
 
 export type FacetSelection = Record<string, string[]>;
 
@@ -25,12 +25,6 @@ export const LIST_FACETS = [
   "development_stage",
   "self_reported_ethnicity",
   "cell_type",
-  "tissue_hierarchy_lvl0",
-  "tissue_hierarchy_lvl1",
-  "tissue_hierarchy_lvl2",
-  "cell_type_hierarchy_lvl0",
-  "cell_type_hierarchy_lvl1",
-  "cell_type_hierarchy_lvl2",
 ] as const;
 
 export const STRING_FACETS = ["source", "study_journal"] as const;
@@ -98,12 +92,6 @@ function mapRow(row: Record<string, unknown>): ExperimentRow {
     suspension_type: asStringArray(row.suspension_type),
     sex: asStringArray(row.sex),
     self_reported_ethnicity: asStringArray(row.self_reported_ethnicity),
-    tissue_hierarchy_lvl0: asStringArray(row.tissue_hierarchy_lvl0),
-    tissue_hierarchy_lvl1: asStringArray(row.tissue_hierarchy_lvl1),
-    tissue_hierarchy_lvl2: asStringArray(row.tissue_hierarchy_lvl2),
-    cell_type_hierarchy_lvl0: asStringArray(row.cell_type_hierarchy_lvl0),
-    cell_type_hierarchy_lvl1: asStringArray(row.cell_type_hierarchy_lvl1),
-    cell_type_hierarchy_lvl2: asStringArray(row.cell_type_hierarchy_lvl2),
     cell_count: row.cell_count != null ? Number(row.cell_count) : 0,
     feature_count: row.feature_count != null ? Number(row.feature_count) : undefined,
     explorer_url: row.explorer_url != null ? String(row.explorer_url) : undefined,
