@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
   AppBar,
@@ -36,6 +36,7 @@ import {
   type FacetField,
   type FacetSelection,
 } from "./catalogQuery";
+import { parseExploreUrl, replaceExploreUrl } from "./urlState";
 
 const TITLE = "Single-cell datasets across species";
 
@@ -88,24 +89,13 @@ function toggleValue(values: string[] | undefined, value: string): string[] {
 export default function App() {
   const [ready, setReady] = useState(false);
   const [bootError, setBootError] = useState<string | null>(null);
-  const [query, setQuery] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState("");
-  // Initial filters from the URL, e.g. ?tissue=UBERON:0000955,UBERON:0000948&organism=NCBITaxon:9606
-  const [facets, setFacets] = useState<FacetSelection>(() => {
-    const params = new URLSearchParams(window.location.search);
-    const out: FacetSelection = {};
-    for (const field of FACET_FIELDS) {
-      const values = (params.get(field) ?? "").split(",").filter(Boolean);
-      if (values.length) out[field] = values;
-    }
-    return out;
-  });
-  // Initial view from the URL (?view=cards|table|pivot), pivot by default.
-  const [view, setView] = useState<ResultsView>(() => {
-    const v = new URLSearchParams(window.location.search).get("view");
-    return v === "cards" || v === "table" ? v : "pivot";
-  });
-  const [page, setPage] = useState(0);
+  const initialUrl = useMemo(() => parseExploreUrl(window.location.search), []);
+  const [query, setQuery] = useState(initialUrl.query);
+  const [debouncedQuery, setDebouncedQuery] = useState(initialUrl.query);
+  // Filters / layout from the URL, e.g. ?view=table&tissue=UBERON:0000955&organism=NCBITaxon:9606
+  const [facets, setFacets] = useState<FacetSelection>(initialUrl.facets);
+  const [view, setView] = useState<ResultsView>(initialUrl.view);
+  const [page, setPage] = useState(initialUrl.page);
   const [rows, setRows] = useState<ExperimentRow[]>([]);
   const [found, setFound] = useState(0);
   const [searchError, setSearchError] = useState<string | null>(null);
@@ -136,9 +126,34 @@ export default function App() {
     return () => window.clearTimeout(timer);
   }, [query]);
 
+  // Reset pagination when the search changes, but keep a bookmarked ?page= on first load.
+  const skipPageReset = useRef(true);
   useEffect(() => {
+    if (skipPageReset.current) {
+      skipPageReset.current = false;
+      return;
+    }
     setPage(0);
   }, [debouncedQuery, facets]);
+
+  // Keep the address bar shareable when filters, layout, search or page change.
+  useEffect(() => {
+    replaceExploreUrl({ view, query: debouncedQuery, facets, page });
+  }, [view, debouncedQuery, facets, page]);
+
+  // Browser back/forward (and pasted history entries) restore the same state.
+  useEffect(() => {
+    const onPopState = () => {
+      const next = parseExploreUrl(window.location.search);
+      setView(next.view);
+      setQuery(next.query);
+      setDebouncedQuery(next.query);
+      setFacets(next.facets);
+      setPage(next.page);
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
 
   useEffect(() => {
     if (!ready || view === "pivot") return;
