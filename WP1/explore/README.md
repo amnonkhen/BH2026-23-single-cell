@@ -24,7 +24,7 @@ Static page (React + Vite + MUI, Nivo heatmap, [hyparquet](https://github.com/hy
   A dataset counts in every row and column it is annotated with: a dataset with two species counts in both species rows, a dataset with five tissues in five columns. Click a cell to list its datasets (it adds filters, exact ones for raw terms).
 - **Cards / Table**: the datasets matching the filters, with links to each resource, the DOI and the H5AD file.
 
-The initial view and filters can be set in the URL, with the value ids of the terms file: e.g. `?view=pivot&tissue=UBERON:0000955,UBERON:0000948&organism=NCBITaxon:9606`.
+The address bar stays in sync with the current search: layout (`view=cards|table|pivot`), free-text `q`, facet ids (from the terms file), and `page` for cards/table. Copy the URL to bookmark or share a filtered view, e.g. `?view=table&tissue=UBERON:0000955,UBERON:0000948&organism=NCBITaxon:9606`. Pivot is the default layout and is omitted from the query string.
 
 ## Run locally
 
