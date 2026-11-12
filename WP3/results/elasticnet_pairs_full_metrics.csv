@@ -1,0 +1,4 @@
+mm_cell,dr_cell,best_alpha,best_l1_ratio,r2,rmse,mae,accuracy,balanced_accuracy,roc_auc,f1,signature_size,top_gene,effect_size_top_gene,jaccard_index
+mm_MyoC_Myh8,dr_fast muscle cell,0.001,0.5,0.9971542595754977,0.0265578849264276,0.01838366984145411,1.0,1.0,1.0,1.0,331,mm_Ttn,-15.046578044770461,0.0
+mm_MyoProg_Pax3,dr_adaxial cell,0.01,0.1,0.5784715905489096,0.0537312159300806,0.03731772539944484,1.0,1.0,1.0,1.0,399,mm_Ptprd,-3.9563274385892977,0.0
+mm_MyoProg_Pax3_Pax7,dr_adaxial cell,0.01,0.5,0.5553887827575009,0.05916633512906398,0.027877051560651688,0.9920634920634921,0.5,1.0,0.0,74,mm_Celf2,-4.359786198570697,0.0
